@@ -1,63 +1,62 @@
-# CodeIgniter 4 Application Starter
+# Pulse Board – ZANKO Hackathon 2025 Submission
 
-## What is CodeIgniter?
+A lightweight, team-based project tracking tool inspired by Azure DevOps.  
+Built during Hackathon 2025 to solve real-world project coordination challenges.
 
-CodeIgniter is a PHP full-stack web framework that is light, fast, flexible and secure.
-More information can be found at the [official site](http://codeigniter.com).
+---
 
-This repository holds a composer-installable app starter.
-It has been built from the
-[development repository](https://github.com/codeigniter4/CodeIgniter4).
+## 🧠 Problem Statement
 
-More information about the plans for version 4 can be found in [the announcement](http://forum.codeigniter.com/thread-62615.html) on the forums.
+Our team faced the following issues in real-life project management:
 
-The user guide corresponding to this version of the framework can be found
-[here](https://codeigniter4.github.io/userguide/).
+1. **Inefficient Task Handover**  
+   Lack of accessible task history and context makes team transitions manual and time-consuming.
 
-## Installation & updates
+2. **Limited Historical Tracking**  
+   No centralized way to view past issues or development activity logs.
 
-`composer create-project codeigniter4/appstarter` then `composer update` whenever
-there is a new release of the framework.
+3. **Difficulty in Progress Tracking**  
+   Hard to monitor team or individual task progress effectively.
 
-When updating, check the release notes to see if there are any changes you might need to apply
-to your `app` folder. The affected files can be copied or merged from
-`vendor/codeigniter4/framework/app`.
+4. **Methodology Mismatch**  
+   Agile principles are applied, but task visibility and tracking are missing, leading to confusion and poor alignment.
 
-## Setup
+---
 
-Copy `env` to `.env` and tailor for your app, specifically the baseURL
-and any database settings.
+## 💡 Solution
 
-## Important Change with index.php
+This system provides:
 
-`index.php` is no longer in the root of the project! It has been moved inside the *public* folder,
-for better security and separation of components.
 
-This means that you should configure your web server to "point" to your project's *public* folder, and
-not to the project root. A better practice would be to configure a virtual host to point there. A poor practice would be to point your web server to the project root and expect to enter *public/...*, as the rest of your logic and the
-framework are exposed.
 
-**Please** read the user guide for a better explanation of how CI4 works!
+---
 
-## Repository Management
+## ⚙️ Tech Stack
 
-We use GitHub issues, in our main repository, to track **BUGS** and to track approved **DEVELOPMENT** work packages.
-We use our [forum](http://forum.codeigniter.com) to provide SUPPORT and to discuss
-FEATURE REQUESTS.
+- **Backend**: 
+- **Database**:
+- **Frontend**: 
+- **API**: 
 
-This repository is a "distribution" one, built by our release preparation script.
-Problems with it can be raised on our forum, or as issues in the main repository.
+---
 
-## Server Requirements
+## 🚀 Getting Started
 
-PHP version 7.4 or higher is required, with the following extensions installed:
+1. Clone the repo
+2. Set up your `.env` / `Database.php`
+3. Run `php spark migrate`
+4. Launch via `http://localhost/`
 
-- [intl](http://php.net/manual/en/intl.requirements.php)
-- [libcurl](http://php.net/manual/en/curl.requirements.php) if you plan to use the HTTP\CURLRequest library
+---
 
-Additionally, make sure that the following extensions are enabled in your PHP:
+## 👥 Team & Acknowledgements
 
-- json (enabled by default - don't turn it off)
-- [mbstring](http://php.net/manual/en/mbstring.installation.php)
-- [mysqlnd](http://php.net/manual/en/mysqlnd.install.php)
-- xml (enabled by default - don't turn it off)
+- Developed during Hackathon 2025
+- Inspired by issues faced in real development workflows
+- Team Member: Faiz Aiman, Rusyaidi, Lynn, Fiqa, Husna 
+
+---
+
+## 📄 License
+
+MIT
