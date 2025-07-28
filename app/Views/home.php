@@ -21,124 +21,119 @@
     </div>
   </div>
 
-  <!-- Summary Cards -->
-  <div class="row g-3 mt-3">
-    <!-- Card 1: Active Projects -->
-    <div class="col-sm-6 col-md-4 col-lg-3">
-      <div class="card course-box widget-course">
-        <div class="card-body">
-          <div class="course-widget">
-            <div class="course-icon warning">
-              <svg class="fill-icon">
-                <use href="<?= base_url() ?>/assets/svg/icon-sprite.svg#course-2"></use>
-              </svg>
-            </div>
-            <div>
-              <h4 class="mb-0">4</h4>
-              <span class="f-light">Active Project</span>
-            </div>
-          </div>
-        </div>
-        <ul class="square-group">
-          <li class="square-1 warning"></li>
-          <li class="square-1 primary"></li>
-          <li class="square-2 warning1"></li>
-          <li class="square-3 danger"></li>
-          <li class="square-4 light"></li>
-          <li class="square-5 warning"></li>
-          <li class="square-6 success"></li>
-          <li class="square-7 success"></li>
-        </ul>
-      </div>
-    </div>
+<!-- Summary Cards -->
+<div class="row g-3 mt-3">
 
-    <!-- Card 2: To Do -->
-    <div class="col-sm-6 col-md-4 col-lg-3">
-      <div class="card course-box widget-course">
-        <div class="card-body">
-          <div class="course-widget">
-            <div class="course-icon warning">
-              <svg class="fill-icon">
-                <use href="<?= base_url() ?>/assets/svg/icon-sprite.svg#course-2"></use>
-              </svg>
-            </div>
-            <div>
-              <h4 class="mb-0">30</h4>
-              <span class="f-light">To Do</span>
-            </div>
+  <!-- Card 1: Active Projects -->
+  <div class="col-sm-6 col-md-4 col-lg-3">
+    <div class="card course-box widget-course">
+      <div class="card-body">
+        <div class="course-widget">
+          <div class="course-icon warning">
+            <i class="fa fa-folder-open text-white fs-3"></i>
+          </div>
+          <div>
+            <h4 class="mb-0">4</h4>
+            <span class="f-light">Active Project</span>
           </div>
         </div>
-        <ul class="square-group">
-          <li class="square-1 warning"></li>
-          <li class="square-1 primary"></li>
-          <li class="square-2 warning1"></li>
-          <li class="square-3 danger"></li>
-          <li class="square-4 light"></li>
-          <li class="square-5 warning"></li>
-          <li class="square-6 success"></li>
-          <li class="square-7 success"></li>
-        </ul>
       </div>
-    </div>
-
-    <!-- Card 3: In Progress -->
-    <div class="col-sm-6 col-md-4 col-lg-3">
-      <div class="card course-box widget-course">
-        <div class="card-body">
-          <div class="course-widget">
-            <div class="course-icon warning">
-              <svg class="fill-icon">
-                <use href="<?= base_url() ?>/assets/svg/icon-sprite.svg#course-2"></use>
-              </svg>
-            </div>
-            <div>
-              <h4 class="mb-0">5</h4>
-              <span class="f-light">In Progress</span>
-            </div>
-          </div>
-        </div>
-        <ul class="square-group">
-          <li class="square-1 warning"></li>
-          <li class="square-1 primary"></li>
-          <li class="square-2 warning1"></li>
-          <li class="square-3 danger"></li>
-          <li class="square-4 light"></li>
-          <li class="square-5 warning"></li>
-          <li class="square-6 success"></li>
-          <li class="square-7 success"></li>
-        </ul>
-      </div>
-    </div>
-
-    <!-- Card 4: Done -->
-    <div class="col-sm-6 col-md-4 col-lg-3">
-      <div class="card course-box widget-course">
-        <div class="card-body">
-          <div class="course-widget">
-            <div class="course-icon warning">
-              <svg class="fill-icon">
-                <use href="<?= base_url() ?>/assets/svg/icon-sprite.svg#course-2"></use>
-              </svg>
-            </div>
-            <div>
-              <h4 class="mb-0">2</h4>
-              <span class="f-light">Done</span>
-            </div>
-          </div>
-        </div>
-        <ul class="square-group">
-          <li class="square-1 warning"></li>
-          <li class="square-1 primary"></li>
-          <li class="square-2 warning1"></li>
-          <li class="square-3 danger"></li>
-          <li class="square-4 light"></li>
-          <li class="square-5 warning"></li>
-          <li class="square-6 success"></li>
-          <li class="square-7 success"></li>
-        </ul>
-      </div>
+      <ul class="square-group">
+        <li class="square-1 warning"></li>
+        <li class="square-1 primary"></li>
+        <li class="square-2 warning1"></li>
+        <li class="square-3 danger"></li>
+        <li class="square-4 light"></li>
+        <li class="square-5 warning"></li>
+        <li class="square-6 success"></li>
+        <li class="square-7 success"></li>
+      </ul>
     </div>
   </div>
+
+  <!-- Card 2: To Do -->
+  <div class="col-sm-6 col-md-4 col-lg-3">
+    <div class="card course-box widget-course">
+      <div class="card-body">
+        <div class="course-widget">
+          <div class="course-icon warning">
+            <i class="fa fa-tasks text-white fs-3"></i>
+          </div>
+          <div>
+            <h4 class="mb-0">30</h4>
+            <span class="f-light">To Do</span>
+          </div>
+        </div>
+      </div>
+      <ul class="square-group">
+        <li class="square-1 warning"></li>
+        <li class="square-1 primary"></li>
+        <li class="square-2 warning1"></li>
+        <li class="square-3 danger"></li>
+        <li class="square-4 light"></li>
+        <li class="square-5 warning"></li>
+        <li class="square-6 success"></li>
+        <li class="square-7 success"></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Card 3: In Progress -->
+  <div class="col-sm-6 col-md-4 col-lg-3">
+    <div class="card course-box widget-course">
+      <div class="card-body">
+        <div class="course-widget">
+          <div class="course-icon warning">
+            <i class="fa fa-spinner fa-spin text-white fs-3"></i>
+          </div>
+          <div>
+            <h4 class="mb-0">5</h4>
+            <span class="f-light">In Progress</span>
+          </div>
+        </div>
+      </div>
+      <ul class="square-group">
+        <li class="square-1 warning"></li>
+        <li class="square-1 primary"></li>
+        <li class="square-2 warning1"></li>
+        <li class="square-3 danger"></li>
+        <li class="square-4 light"></li>
+        <li class="square-5 warning"></li>
+        <li class="square-6 success"></li>
+        <li class="square-7 success"></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Card 4: Done -->
+  <div class="col-sm-6 col-md-4 col-lg-3">
+    <div class="card course-box widget-course">
+      <div class="card-body">
+        <div class="course-widget">
+          <div class="course-icon warning">
+            <i class="fa fa-check-circle text-white fs-3"></i>
+          </div>
+          <div>
+            <h4 class="mb-0">2</h4>
+            <span class="f-light">Done</span>
+          </div>
+        </div>
+      </div>
+      <ul class="square-group">
+        <li class="square-1 warning"></li>
+        <li class="square-1 primary"></li>
+        <li class="square-2 warning1"></li>
+        <li class="square-3 danger"></li>
+        <li class="square-4 light"></li>
+        <li class="square-5 warning"></li>
+        <li class="square-6 success"></li>
+        <li class="square-7 success"></li>
+      </ul>
+    </div>
+  </div>
+
+</div>
+
 
   <div class="row">
   <!-- Project Summary Column -->
