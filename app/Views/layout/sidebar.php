@@ -58,8 +58,7 @@
             <ul class="sidebar-submenu">
               <li><a href="<?= base_url("project/project") ?>">My Projects</a></li>
               <li><a href="<?= base_url() ?>">Archived Projects</a></li>
-              <li><a href="<?= base_url() ?>">Departments Projects??</a></li>
-
+              <!-- <li><a href="<?= base_url() ?>">Departments Projects??</a></li> -->
             </ul>
           </li>
           <!-- End Project Menu -->
@@ -72,9 +71,9 @@
               <span>Board</span>
             </a>
             <ul class="sidebar-submenu">
-              <li><a href="<?= base_url("board/board") ?>">Work Items</a></li>
+              <li><a href="<?= base_url("board/work_item") ?>">Work Items</a></li>
               <li><a href="<?= base_url("board/kanban") ?>">Board</a></li>
-              <li><a href="<?= base_url("board/tasks") ?>">Task Overview</a></li>
+              <li><a href="<?= base_url("board/task") ?>">Task Overview</a></li>
               <li><a href="<?= base_url("board/sprints") ?>">Sprint Planning</a></li>
               <li><a href="<?= base_url("board/backlog") ?>">Backlog</a></li>
             </ul>
