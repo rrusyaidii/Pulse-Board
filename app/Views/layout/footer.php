@@ -3,7 +3,7 @@
      <div class="container-fluid">
          <div class="row">
              <div class="col-md-12 footer-copyright text-center">
-                 <p class="mb-0">Copyright 2021 © Cuba theme by pixelstrap </p>
+             <p class="mb-0">© 2025 Team Debugs Thugs. All rights reserved. Hackathon Submission.</p>
              </div>
          </div>
      </div>
