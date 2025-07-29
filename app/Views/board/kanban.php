@@ -22,6 +22,7 @@
         </div>
     </div>
 </div>
+
 <!-- Container-fluid starts-->
 <div class="container-fluid jkanban-container">
     <div class="row">
@@ -35,8 +36,6 @@
                 </div>
             </div>
         </div>
-     
-
     </div>
 </div>
 
