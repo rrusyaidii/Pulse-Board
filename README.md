@@ -53,6 +53,7 @@ This system provides:
 
 - Developed during Hackathon 2025
 - Inspired by issues faced in real development workflows
+- Mentor: Cik Mimi
 - Team Member: Faiz Aiman, Rusyaidi, Lynn, Fiqa, Husna 
 
 ---
