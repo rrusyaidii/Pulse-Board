@@ -21610,6 +21610,16 @@ ul.dot-group li {
   font-size: 15px;
   letter-spacing: 0.4px;
 }
+
+/* For dark mode h4 in login card */
+body.dark-only .login-card .login-main .theme-form h4 {
+  color: #000000;
+}
+
+/* For dark mode labels in login card */
+body.dark-only .login-card .login-main .theme-form label {
+  color: #000000;
+}
 .login-card .login-main .theme-form .checkbox label::before {
   background-color: #f9f9fa;
   border: 1px solid #dfdfdf;

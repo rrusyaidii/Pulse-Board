@@ -15,6 +15,8 @@
     <link rel="stylesheet" type="text/css" href="<?=base_url()?>/assets/css/font-awesome.css" ></link>
     <link rel="stylesheet" type="text/css" href="<?=base_url()?>/assets/css/vendors/animate.css">
     <link rel="stylesheet" type="text/css" href="<?=base_url()?>/assets/css/vendors/jkanban.css">
+    <link rel="stylesheet" type="text/css" href="<?=base_url()?>/assets/css/vendors/sweetalert2.css">
+
     <title><?= $title ?></title>
     <!-- Google font-->
     <link href="https://fonts.googleapis.com/css?family=Rubik:400,400i,500,500i,700,700i&amp;display=swap" rel="stylesheet">
