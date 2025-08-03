@@ -1,4 +1,5 @@
 <?= $this->extend('layout/master') ?>
+
 <?= $this->section('main-content') ?>
 
 <div class="container-fluid">
@@ -24,39 +25,40 @@
       <div class="row align-items-center">
         <div class="col-md-4">
           <label class="form-label fw-semibold">Select Project</label>
-          <select class="form-select">
-            <option value="1" selected>Pulse Board</option>
-            <option value="2">Inventory System</option>
+          <select class="form-select" id="projectSelect">
+            <option value="">Select Project</option>
+            <?php foreach ($projects as $project): ?>
+                <option value="<?= $project['projectID'] ?>"><?= esc($project['name']) ?></option>
+            <?php endforeach; ?>
           </select>
         </div>
         <div class="col-md-4">
           <label class="form-label fw-semibold">Select Sprint</label>
-          <select class="form-select">
-            <option value="1" selected>Sprint 1 (01-14 Aug)</option>
-            <option value="2">Sprint 2 (15-28 Aug)</option>
+          <select class="form-select" id="sprintSelect">
+            <option value="">Select Sprint</option>
           </select>
         </div>
         <div class="col-md-4 text-end mt-4">
-          <button class="btn btn-primary">
-            <i class="fa fa-plus me-1"></i> Create Sprint
-          </button>
+            <a href="<?= base_url('board/sprints/create') ?>" class="btn btn-primary">
+                <i class="fa fa-plus me-1"></i> Create Sprint
+            </a>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Card 2: Product Backlog -->
+  <!-- Product Backlog -->
   <div class="card mb-4 shadow-sm border-0">
     <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
       <h5 class="fw-semibold text-dark mb-0">
         <i class="fa fa-list me-2 text-primary"></i> Product Backlog
       </h5>
-      <span class="badge bg-light text-dark">2 Items</span>
+      <span class="badge bg-light text-dark" id="backlogCount">0 Items</span>
     </div>
-    <div class="card-body p-3" style="max-height: 560px; overflow-y: auto;">
+    <div class="card-body p-3">
       <div class="table-responsive">
-        <table class="table table-hover align-middle">
-          <thead class="table-light">
+        <table class="table table-hover align-middle table-striped table-sm" id="backlogTable" style="width:100%">
+          <thead class="table table-striped">
             <tr>
               <th>#</th>
               <th>Title</th>
@@ -65,47 +67,24 @@
               <th>Action</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>6</td>
-              <td>Implement email verification</td>
-              <td><span class="badge bg-danger">High</span></td>
-              <td><span class="badge bg-secondary">Backlog</span></td>
-              <td>
-                <button class="btn btn-sm btn-primary">
-                  <i class="fa fa-plus me-1"></i> Add to Sprint
-                </button>
-              </td>
-            </tr>
-            <tr>
-              <td>7</td>
-              <td>Export report to CSV</td>
-              <td><span class="badge bg-warning text-dark">Medium</span></td>
-              <td><span class="badge bg-secondary">Backlog</span></td>
-              <td>
-                <button class="btn btn-sm btn-primary">
-                  <i class="fa fa-plus me-1"></i> Add to Sprint
-                </button>
-              </td>
-            </tr>
-          </tbody>
+          <tbody></tbody>
         </table>
       </div>
     </div>
   </div>
 
-  <!-- Card 3: Current Sprint Tasks -->
+  <!-- Current Sprint Tasks -->
   <div class="card shadow-sm border-0">
     <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
       <h5 class="fw-semibold text-dark mb-0">
         <i class="fa fa-tasks me-2 text-success"></i> Current Sprint Tasks
       </h5>
-      <span class="badge bg-light text-dark">3 Tasks</span>
+      <span class="badge bg-light text-dark" id="currentTasksCount">0 Tasks</span>
     </div>
-    <div class="card-body p-3" style="max-height: 560px; overflow-y: auto;">
+    <div class="card-body p-3">
       <div class="table-responsive">
-        <table class="table table-hover align-middle">
-          <thead class="table-light">
+        <table class="table table-hover align-middle table-striped table-sm" id="currentSprintTable" style="width:100%">
+          <thead class="table table-striped">
             <tr>
               <th>#</th>
               <th>Title</th>
@@ -115,32 +94,7 @@
               <th>Due</th>
             </tr>
           </thead>
-          <tbody>
-            <tr>
-              <td>1</td>
-              <td>Design login UI</td>
-              <td><span class="badge bg-warning text-dark">In Progress</span></td>
-              <td><span class="badge bg-danger">High</span></td>
-              <td>Aiman</td>
-              <td>03 Aug</td>
-            </tr>
-            <tr>
-              <td>2</td>
-              <td>Setup login API</td>
-              <td><span class="badge bg-success">Done</span></td>
-              <td><span class="badge bg-warning text-dark">Medium</span></td>
-              <td>Sara</td>
-              <td>05 Aug</td>
-            </tr>
-            <tr>
-              <td>3</td>
-              <td>Create user CRUD UI</td>
-              <td><span class="badge bg-secondary">To-do</span></td>
-              <td><span class="badge bg-danger">High</span></td>
-              <td>Fatin</td>
-              <td>06 Aug</td>
-            </tr>
-          </tbody>
+          <tbody></tbody>
         </table>
       </div>
     </div>
@@ -148,4 +102,116 @@
 
 </div>
 
+<?= $this->endSection() ?>
+
+
+<?= $this->section('script') ?>
+<script>
+$(document).ready(function () {
+
+    // DataTables: Show entries + search top, info + pagination bottom
+    const tableOptions = {
+        dom:
+            // Top row: Length selector + Search
+            '<"d-flex justify-content-between align-items-center mb-2"l f>' +
+            // Table
+            't' +
+            // Bottom row: Info + Pagination on one line
+            '<"d-flex justify-content-between align-items-center mt-2"i p>',
+        pageLength: 5,
+        lengthChange:false,
+        lengthMenu: [5, 10, 25, 50],
+        language: {
+            emptyTable: "No data available",
+            search: "_INPUT_",
+            searchPlaceholder: "Search..."
+        }
+    };
+
+    let backlogTable = $('#backlogTable').DataTable(tableOptions);
+    let currentSprintTable = $('#currentSprintTable').DataTable(tableOptions);
+
+    // Load sprints on project select
+    $('#projectSelect').change(function () {
+        let projectID = $(this).val();
+        $('#sprintSelect').html('<option value="">Select Sprint</option>');
+
+        backlogTable.clear().draw();
+        currentSprintTable.clear().draw();
+        $('#backlogCount').text('0 Items');
+        $('#currentTasksCount').text('0 Tasks');
+
+        if (projectID) {
+            $.get('<?= base_url('board/sprints/getSprints') ?>/' + projectID, function (res) {
+                console.log('getSprints response:', res);
+
+                if (res.status === 'success') {
+                    res.sprints.forEach(sprint => {
+                        $('#sprintSelect').append(
+                            `<option value="${sprint.sprintID}">${sprint.name} (${sprint.startDate} - ${sprint.endDate})</option>`
+                        );
+                    });
+                } else {
+                    Swal.fire('Error', 'Failed to load sprints', 'error');
+                }
+            }, 'json');
+        }
+    });
+
+    // Load tasks on sprint select
+    $('#sprintSelect').change(function () {
+        let sprintID = $(this).val();
+        console.log('Sprint changed:', sprintID);
+
+        if (!sprintID) {
+            backlogTable.clear().draw();
+            currentSprintTable.clear().draw();
+            $('#backlogCount').text('0 Items');
+            $('#currentTasksCount').text('0 Tasks');
+            return;
+        }
+
+        $.get('<?= base_url('board/sprints/getTasks') ?>/' + sprintID, function (res) {
+            console.log('getTasks response:', res);
+
+            if (res.status === 'success') {
+                backlogTable.clear();
+                currentSprintTable.clear();
+
+                // Populate backlog
+                if (res.backlog.length > 0) {
+                    let backlogRows = res.backlog.map(task => [
+                        task.taskID,
+                        task.name,
+                        `<span class="badge ${task.priority=='High'?'bg-danger':(task.priority=='Medium'?'bg-warning text-dark':'bg-success')}">${task.priority}</span>`,
+                        `<span class="badge bg-secondary">${task.status ?? 'Backlog'}</span>`,
+                        `<button class="btn btn-sm btn-primary"><i class="fa fa-plus me-1"></i> Add to Sprint</button>`
+                    ]);
+                    backlogTable.rows.add(backlogRows);
+                }
+                backlogTable.draw();
+                $('#backlogCount').text(res.backlog.length + ' Items');
+
+                // Populate current sprint tasks
+                if (res.currentSprintTasks.length > 0) {
+                    let sprintRows = res.currentSprintTasks.map(task => [
+                        task.taskID,
+                        task.name,
+                        `<span class="badge ${task.status=='Done'?'bg-success':(task.status=='In Progress'?'bg-warning text-dark':'bg-secondary')}">${task.status}</span>`,
+                        `<span class="badge ${task.priority=='High'?'bg-danger':(task.priority=='Medium'?'bg-warning text-dark':'bg-success')}">${task.priority}</span>`,
+                        task.assigneeID ?? 'Unassigned',
+                        task.endDate ?? '-'
+                    ]);
+                    currentSprintTable.rows.add(sprintRows);
+                }
+                currentSprintTable.draw();
+                $('#currentTasksCount').text(res.currentSprintTasks.length + ' Tasks');
+            } else {
+                Swal.fire('Error', 'Failed to load tasks', 'error');
+            }
+        }, 'json');
+    });
+
+});
+</script>
 <?= $this->endSection() ?>
