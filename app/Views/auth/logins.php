@@ -45,8 +45,8 @@
             <div>
               <div class="login-main"> 
 
-                <form  class="theme-form">
-                <!-- <form method="post" action="<?= base_url('/loginAuth') ?>" class="theme-form"> -->
+                <!-- <form  class="theme-form"> -->
+                <form method="post" action="<?= base_url('/auth/attemptLogin') ?>" class="theme-form">
                   <h4>Sign in to account</h4>
                   <div class="pt-3 form-group">
                     <label class="col-form-label">Email Address</label>
@@ -96,6 +96,18 @@
         });
       });
     </script>
+
+    <?php if (session()->getFlashdata('error')): ?>
+      <script>
+        swal({
+          title: "Login Failed",
+          text: "<?= session('error') ?>",
+          icon: "error",
+          button: "Try Again",
+        });
+      </script>
+    <?php endif; ?>
+
 
 
 </body>

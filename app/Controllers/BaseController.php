@@ -35,7 +35,9 @@ abstract class BaseController extends Controller
      *
      * @var array
      */
-    protected $helpers = [];
+    protected $helpers = ['url', 'form'];
+
+    protected $session;
 
     /**
      * Constructor.
@@ -45,8 +47,26 @@ abstract class BaseController extends Controller
         // Do Not Edit This Line
         parent::initController($request, $response, $logger);
 
-        // Preload any models, libraries, etc, here.
+        $this->session = session();
 
-        // E.g.: $this->session = \Config\Services::session();
+        // Get URI segments
+        $uri = service('uri');
+        $segments = $uri->getSegments();
+
+        $currentController = strtolower($segments[0] ?? 'home');
+        $currentMethod = strtolower($segments[1] ?? 'index');
+
+        // List of controllers or routes allowed without login
+         $publicRoutes = [
+        'auth',     // allow access to /auth/login, /auth/register etc.
+        'logins',   // in case your login controller is named Logins
+        '',         // allow /
+    ];
+
+        // If user is not logged in and trying to access a restricted controller
+        if (!$this->session->get('logged_in') && !in_array($currentController, $publicRoutes)) {
+            header('Location: ' . base_url('/auth/login'));
+            exit; // IMPORTANT: ensure execution stops
+        }
     }
 }

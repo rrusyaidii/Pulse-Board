@@ -60,16 +60,18 @@
         </li>
         <li class="profile-nav onhover-dropdown pe-0 py-0">
           <div class="media profile-media"><img class="b-r-10" src="<?= base_url() ?>/assets/images/dashboard/profile.png" alt="">
-            <div class="media-body"><span>Emay Walter</span>
-              <p class="mb-0 font-roboto">Admin <i class="middle fa fa-angle-down"></i></p>
+            <div class="media-body"><span><?= session()->get('name') ?></span>
+              <p class="mb-0 font-roboto"><?= ucwords(session()->get('role')) ?> <i class="middle fa fa-angle-down"></i></p>
             </div>
           </div>
           <ul class="profile-dropdown onhover-show-div">
-            <li><a href="#"><i data-feather="user"></i><span>Account </span></a></li>
-            <li><a href="#"><i data-feather="mail"></i><span>Inbox</span></a></li>
-            <li><a href="#"><i data-feather="file-text"></i><span>Taskboard</span></a></li>
-            <li><a href="#"><i data-feather="settings"></i><span>Settings</span></a></li>
-            <li><a href="#"><i data-feather="log-in"> </i><span>Log in</span></a></li>
+            <?php if (session()->get('logged_in')) : ?>
+              <li><a href="#"><i data-feather="user"></i><span>Account </span></a></li>
+              <li><a href="#"><i data-feather="settings"></i><span>Settings</span></a></li>
+              <li><a href="<?= base_url('auth/logout') ?>"><i data-feather="log-out"></i><span>Log out</span></a></li>
+            <?php else : ?>
+              <li><a href="<?= base_url('auth/login') ?>"><i data-feather="log-in"></i><span>Log in</span></a></li>
+            <?php endif; ?>
           </ul>
         </li>
       </ul>
