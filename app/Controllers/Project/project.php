@@ -13,14 +13,20 @@ class Project extends BaseController
     public function index()
     {
         $model = new ProjectsModel();
-        $projects = $model->getProjectsWithJoins();
-        $data =[
+        $userID = session()->get('userID');
+        $role = session()->get('role');
+
+        $projects = $model->getProjectsWithJoins($userID);
+
+        $data = [
             'title' => 'Project Overview',
-            'breadcrumbs' =>'My Project',
+            'breadcrumbs' => 'My Project',
             'projects' => $projects,
         ];
-        return view('project/project_overview',$data);
+
+        return view('project/project_overview', $data);
     }
+
 
     public function create()
     {
@@ -32,6 +38,10 @@ class Project extends BaseController
         $organizationModel = new OrganizationModel();
         $departmentModel = new DepartmentModel();
         $clientsModel = new ClientsModel();
+
+        $userModel = new \App\Models\UserModel(); // use your actual User model
+$data['users'] = $userModel->findAll();
+
 
         $data['organizations'] = $organizationModel->findAll();
         $data['departments'] = $departmentModel->findAll();

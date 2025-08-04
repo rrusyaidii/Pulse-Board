@@ -59,15 +59,15 @@
           </div>
         </li>
         <li class="profile-nav onhover-dropdown pe-0 py-0">
-          <div class="media profile-media"><img class="b-r-10" src="<?= base_url() ?>/assets/images/dashboard/profile.png" alt="">
+          <div class="media profile-media"><img class="b-r-10" src="<?= base_url() ?>/assets/images/logo/zoro.jpg" alt="" style="height: 32px; width: 32px; object-fit: cover;">
             <div class="media-body"><span><?= session()->get('name') ?></span>
               <p class="mb-0 font-roboto"><?= ucwords(session()->get('role')) ?> <i class="middle fa fa-angle-down"></i></p>
             </div>
           </div>
           <ul class="profile-dropdown onhover-show-div">
             <?php if (session()->get('logged_in')) : ?>
-              <li><a href="#"><i data-feather="user"></i><span>Account </span></a></li>
-              <li><a href="#"><i data-feather="settings"></i><span>Settings</span></a></li>
+              <!-- <li><a href="#"><i data-feather="user"></i><span>Account </span></a></li>
+              <li><a href="#"><i data-feather="settings"></i><span>Settings</span></a></li> -->
               <li><a href="<?= base_url('auth/logout') ?>"><i data-feather="log-out"></i><span>Log out</span></a></li>
             <?php else : ?>
               <li><a href="<?= base_url('auth/login') ?>"><i data-feather="log-in"></i><span>Log in</span></a></li>

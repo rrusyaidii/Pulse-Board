@@ -102,6 +102,36 @@
                       </div>
                     </div>
 
+                    <!-- User Assignments Section -->
+<div class="row g-3 mb-3" id="user-assignments-wrapper">
+  <label class="form-label">Assign Users</label>
+
+  <div class="user-assignment row mb-2">
+    <div class="col-md-6">
+      <select name="userIDs[]" class="form-select" required>
+        <option value="" disabled selected>Choose User...</option>
+        <?php foreach ($users as $user): ?>
+          <option value="<?= $user['userID'] ?>"><?= $user['name'] ?></option>
+        <?php endforeach; ?>
+      </select>
+    </div>
+    <div class="col-md-4">
+      <select name="roles[]" class="form-select" required>
+        <option value="" disabled selected>Choose Role...</option>
+        <option value="manager">Manager</option>
+        <option value="developer">Developer</option>
+        <option value="qa">QA</option>
+      </select>
+    </div>
+    <div class="col-md-2">
+      <button type="button" class="btn btn-danger btn-remove-user">Remove</button>
+    </div>
+  </div>
+</div>
+
+<button type="button" class="btn btn-secondary mb-3" id="add-user">+ Add Another User</button>
+
+
                     <button class="btn btn-primary" type="submit">Create Project</button>
                     </form>
             </div>
@@ -117,5 +147,24 @@
 <!-- End of container-fluid -->
 
 </div>
+
+<script>
+document.getElementById('add-user').addEventListener('click', function () {
+  let wrapper = document.getElementById('user-assignments-wrapper');
+  let clone = wrapper.querySelector('.user-assignment').cloneNode(true);
+  clone.querySelectorAll('select').forEach(select => select.selectedIndex = 0);
+  wrapper.appendChild(clone);
+});
+
+document.addEventListener('click', function (e) {
+  if (e.target.classList.contains('btn-remove-user')) {
+    let row = e.target.closest('.user-assignment');
+    if (document.querySelectorAll('.user-assignment').length > 1) {
+      row.remove();
+    }
+  }
+});
+</script>
+
 
 <?= $this->endSection() ?>
