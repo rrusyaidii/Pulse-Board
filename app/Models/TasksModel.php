@@ -13,7 +13,7 @@ class TasksModel extends Model
     protected $returnType       = 'array';
     protected $allowedFields    = [
         'orgID', 'projectID', 'sprintID', 'assigneeID', 'createdBy',
-        'name', 'priority', 'type', 'status', 'dateCreated', 'dateModified'
+        'name', 'priority', 'type', 'status', 'dateCreated', 'dateModified','description'
     ];
 
     protected $useTimestamps = false;

@@ -6,7 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\ProjectsModel;
 use App\Models\SprintModel;
 use App\Models\TasksModel;
-use App\Models\UserModel; // For assignee dropdown
+use App\Models\UserModel;
 
 class Task extends BaseController
 {
@@ -20,53 +20,42 @@ class Task extends BaseController
         $this->projectsModel = new ProjectsModel();
         $this->sprintModel   = new SprintModel();
         $this->tasksModel    = new TasksModel();
-        $this->usersModel    = new UserModel(); // For assignees
+        $this->usersModel    = new UserModel();
     }
 
-    /**
-     * Task Overview Page
-     */
+    /** Task Overview Page */
     public function index()
     {
-        $data = [
+        return view('board/task_overview', [
             'title'       => 'Task Overview',
             'breadcrumbs' => 'Task Overview',
             'projects'    => $this->projectsModel->findAll(),
-            'users'       => $this->usersModel->findAll(), // Assignee dropdown
-        ];
-
-        return view('board/task_overview', $data);
-    }
-
-    /**
-     * AJAX: Get Sprints by Project
-     */
-    public function getSprints($projectID)
-    {
-        $sprints = $this->sprintModel
-            ->where('projectID', $projectID)
-            ->orderBy('startDate', 'ASC')
-            ->findAll();
-
-        return $this->response->setJSON([
-            'status'  => 'success',
-            'sprints' => $sprints
+            'users'       => $this->usersModel->findAll(),
         ]);
     }
 
-    /**
-     * AJAX: Store Task
-     */
+    /** Show Create Task Page */
+    public function create()
+    {
+        return view('board/task_create', [
+            'title'       => 'Create Task',
+            'breadcrumbs' => 'Create Task',
+            'projects'    => $this->projectsModel->findAll(),
+            'users'       => $this->usersModel->findAll(),
+        ]);
+    }
+
+    /** Store Task (AJAX) */
     public function store()
     {
         $validation = \Config\Services::validation();
-
         $rules = [
-            'name'      => 'required|min_length[3]',
-            'projectID' => 'required|numeric',
-            'sprintID'  => 'permit_empty|numeric',
-            'priority'  => 'required',
-            'type'      => 'required'
+            'name'       => 'required|min_length[3]',
+            'projectID'  => 'required|numeric',
+            'sprintID'   => 'permit_empty|numeric',
+            'priority'   => 'required',
+            'type'       => 'required',
+            'description'=> 'permit_empty|string',
         ];
 
         if (!$this->validate($rules)) {
@@ -76,17 +65,20 @@ class Task extends BaseController
             ]);
         }
 
-        $saved = $this->tasksModel->insert([
-            'name'       => $this->request->getPost('name'),
-            'projectID'  => $this->request->getPost('projectID'),
-            'sprintID'   => $this->request->getPost('sprintID') ?: null,
-            'assigneeID' => $this->request->getPost('assigneeID') ?: null,
-            'priority'   => $this->request->getPost('priority'),
-            'type'       => $this->request->getPost('type'),
-            'status'     => 'To Do'
-        ]);
+        $data = [
+            'name'        => $this->request->getPost('name'),
+            'projectID'   => $this->request->getPost('projectID'),
+            'sprintID'    => $this->request->getPost('sprintID') ?: null,
+            'assigneeID'  => $this->request->getPost('assigneeID') ?: null,
+            'priority'    => $this->request->getPost('priority'),
+            'type'        => $this->request->getPost('type'),
+            'description' => $this->request->getPost('description'),
+            'status'      => 'To Do',
+            'dateCreated' => date('Y-m-d H:i:s'),
+            'dateModified'=> date('Y-m-d H:i:s'),
+        ];
 
-        if ($saved) {
+        if ($this->tasksModel->insert($data)) {
             return $this->response->setJSON([
                 'status'  => 'success',
                 'message' => 'Task created successfully!'
@@ -99,42 +91,124 @@ class Task extends BaseController
         ]);
     }
 
-    /**
-     * AJAX: Get Tasks for DataTable (filtered by project & sprint)
-     */
+    /** View Task Page */
+    public function view($taskID)
+    {
+        $task = $this->tasksModel->find($taskID);
+        if (!$task) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Task not found.');
+        }
+
+        $project  = $this->projectsModel->find($task['projectID']);
+        $assignee = $task['assigneeID'] ? $this->usersModel->find($task['assigneeID']) : null;
+
+        return view('board/task_view', [
+            'title'       => 'Task Details',
+            'breadcrumbs' => 'Task Details',
+            'task'        => $task,
+            'project'     => $project,
+            'assignee'    => $assignee
+        ]);
+    }
+
+    /** Show Edit Task Page */
+    public function edit($taskID)
+    {
+        $task = $this->tasksModel->find($taskID);
+        if (!$task) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Task not found.');
+        }
+
+        return view('board/task_edit', [
+            'title'       => 'Edit Task',
+            'breadcrumbs' => 'Edit Task',
+            'task'        => $task,
+            'projects'    => $this->projectsModel->findAll(),
+            'users'       => $this->usersModel->findAll(),
+        ]);
+    }
+
+    /** Update Task (AJAX) */
+    public function update($taskID)
+    {
+        $task = $this->tasksModel->find($taskID);
+        if (!$task) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'message' => 'Task not found.'
+            ]);
+        }
+
+        $validation = \Config\Services::validation();
+        $rules = [
+            'name'       => 'required|min_length[3]',
+            'projectID'  => 'required|numeric',
+            'sprintID'   => 'permit_empty|numeric',
+            'priority'   => 'required',
+            'type'       => 'required',
+            'description'=> 'permit_empty|string',
+        ];
+
+        if (!$this->validate($rules)) {
+            return $this->response->setJSON([
+                'status' => 'error',
+                'errors' => $validation->getErrors()
+            ]);
+        }
+
+        $data = [
+            'name'        => $this->request->getPost('name'),
+            'projectID'   => $this->request->getPost('projectID'),
+            'sprintID'    => $this->request->getPost('sprintID') ?: null,
+            'assigneeID'  => $this->request->getPost('assigneeID') ?: null,
+            'priority'    => $this->request->getPost('priority'),
+            'type'        => $this->request->getPost('type'),
+            'description' => $this->request->getPost('description'),
+            'dateModified'=> date('Y-m-d H:i:s'),
+        ];
+
+        if ($this->tasksModel->update($taskID, $data)) {
+            return $this->response->setJSON([
+                'status'  => 'success',
+                'message' => 'Task updated successfully!'
+            ]);
+        }
+
+        return $this->response->setJSON([
+            'status'  => 'error',
+            'message' => 'Failed to update task'
+        ]);
+    }
+
+    /** AJAX: Get Tasks for DataTable */
     public function getTasks()
     {
         $projectID = $this->request->getGet('projectID');
         $sprintID  = $this->request->getGet('sprintID');
 
         $builder = $this->tasksModel;
-
-        if (!empty($projectID)) {
-            $builder = $builder->where('projectID', $projectID);
-        }
-        if (!empty($sprintID)) {
-            $builder = $builder->where('sprintID', $sprintID);
-        }
+        if (!empty($projectID)) $builder = $builder->where('projectID', $projectID);
+        if (!empty($sprintID))  $builder = $builder->where('sprintID', $sprintID);
 
         $tasks = $builder->findAll();
-
-        // Format data for DataTables (without user story)
         $formatted = [];
+
         foreach ($tasks as $task) {
             $formatted[] = [
                 $task['taskID'],
-                esc($task['name']),
+                '<a href="'.base_url('board/task/view/'.$task['taskID']).'">'.esc($task['name']).'</a>',
                 $task['sprintID'] ? 'Sprint '.$task['sprintID'] : 'Backlog',
                 'Project '.$task['projectID'],
                 '<span class="badge bg-secondary">'.esc($task['status']).'</span>',
                 $task['assigneeID'] ? 'User '.$task['assigneeID'] : 'Unassigned',
-                '<span class="badge '.($task['priority']=='High'?'bg-danger':($task['priority']=='Medium'?'bg-warning text-dark':'bg-success')).'">'.esc($task['priority']).'</span>',
+                '<span class="badge '.(
+                    $task['priority']=='High'?'bg-danger':
+                    ($task['priority']=='Normal'?'bg-warning text-dark':'bg-success')
+                ).'">'.esc($task['priority']).'</span>',
                 '<span class="badge bg-primary">'.esc($task['type']).'</span>'
             ];
         }
 
-        return $this->response->setJSON([
-            'data' => $formatted
-        ]);
+        return $this->response->setJSON(['data' => $formatted]);
     }
 }

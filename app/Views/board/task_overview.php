@@ -32,9 +32,9 @@
           </select>
         </div>
         <div class="col-md-4 text-end mt-4">
-          <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createTaskModal">
-            <i class="fa fa-plus me-1"></i> Create Task
-          </button>
+            <a href="<?= base_url('board/task/create') ?>" class="btn btn-primary">
+                <i class="fa fa-plus me-1"></i> Create Task
+            </a>
         </div>
       </div>
     </div>
@@ -63,69 +63,6 @@
 </div>
 
 <!-- Create Task Modal -->
-<div class="modal fade" id="createTaskModal" tabindex="-1" aria-labelledby="createTaskLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg">
-    <form id="createTaskForm" class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="createTaskLabel">Create Task</h5>
-        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body">
-        <div class="row g-3">
-          <div class="col-md-6">
-            <label class="form-label">Task Name</label>
-            <input type="text" class="form-control" name="name" required>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Project</label>
-            <select class="form-select" name="projectID" id="modalProjectSelect" required>
-              <option value="">Select Project</option>
-              <?php foreach ($projects as $project): ?>
-                  <option value="<?= $project['projectID'] ?>"><?= esc($project['name']) ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Sprint (Optional)</label>
-            <select class="form-select" name="sprintID" id="modalSprintSelect">
-              <option value="">Backlog</option>
-            </select>
-          </div>
-          <div class="col-md-6">
-            <label class="form-label">Assignee</label>
-            <select class="form-select" name="assigneeID">
-              <option value="">Unassigned</option>
-              <?php foreach ($users as $user): ?>
-                  <option value="<?= $user['userID'] ?>"><?= esc($user['name']) ?></option>
-              <?php endforeach; ?>
-            </select>
-          </div>
-          <div class="col-md-3">
-            <label class="form-label">Priority</label>
-            <select class="form-select" name="priority">
-              <option>Low</option>
-              <option>Medium</option>
-              <option>High</option>
-            </select>
-          </div>
-          <div class="col-md-3">
-            <label class="form-label">Type</label>
-            <select class="form-select" name="type">
-              <option>UI</option>
-              <option>Backend</option>
-              <option>Frontend</option>
-              <option>Infra</option>
-            </select>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer">
-        <button type="submit" class="btn btn-primary">Save Task</button>
-        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-      </div>
-    </form>
-  </div>
-</div>
 <?= $this->endSection() ?>
 
 

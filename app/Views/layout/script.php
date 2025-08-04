@@ -21,13 +21,17 @@
 <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+<!-- quill editor js -->
+<link href="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/summernote@0.9.0/dist/summernote-lite.min.js"></script>
+
+
 
 <!-- 4️⃣ Page-specific scripts -->
 <?= $this->renderSection('script') ?>
 
 <!-- 5️⃣ Theme and final scripts -->
 <script src="<?= base_url() ?>/assets/js/script.js"></script>
-<script src="<?= base_url() ?>/assets/js/theme-customizer/customizer.js"></script>
 
 <script>
     new WOW().init();
