@@ -34,7 +34,7 @@
             <div class="mb-3 row">
               <label class="col-sm-4 col-form-label">Task Name</label>
               <div class="col-sm-8">
-                <input class="form-control" name="name" value="<?= esc($task['name']) ?>" required>
+                <input class="form-control" name="name" value="<?= esc($task['name']) ?>" autocomplete="off" required>
               </div>
             </div>
 

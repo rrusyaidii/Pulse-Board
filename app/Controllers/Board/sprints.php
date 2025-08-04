@@ -3,9 +3,10 @@
 namespace App\Controllers\Board;
 
 use App\Controllers\BaseController;
-use App\Models\ProjectsModel;
 use App\Models\SprintModel;
+use App\Models\ProjectsModel;
 use App\Models\TasksModel;
+use App\Models\UserModel;
 
 class Sprints extends BaseController
 {
@@ -13,38 +14,36 @@ class Sprints extends BaseController
     protected $projectsModel;
     protected $tasksModel;
 
+    protected $userModel;
+
     public function __construct()
     {
         $this->sprintModel   = new SprintModel();
         $this->projectsModel = new ProjectsModel();
         $this->tasksModel    = new TasksModel();
+        $this->userModel     = new UserModel();
     }
 
     // Sprint Planning Page
     public function index()
     {
-        $data = [
-            'title'       => 'Sprint',
+        return view('board/sprint_overview', [
+            'title'       => 'Sprint Planning',
             'breadcrumbs' => 'Sprint Planning',
             'projects'    => $this->projectsModel->findAll()
-        ];
-
-        return view('board/sprint_overview', $data);
+        ]);
     }
 
     // Show Create Sprint Form
     public function create()
     {
-        $data = [
+        return view('board/sprint_create', [
             'title'       => 'Create Sprint',
             'breadcrumbs' => 'Create Sprint',
             'projects'    => $this->projectsModel->findAll()
-        ];
-
-        return view('board/sprint_create', $data);
+        ]);
     }
 
-    // Store Sprint (AJAX)
     public function store()
     {
         $validation = \Config\Services::validation();
@@ -71,20 +70,12 @@ class Sprints extends BaseController
             'endDate'   => $this->request->getPost('endDate')
         ]);
 
-        if ($saved) {
-            return $this->response->setJSON([
-                'status'  => 'success',
-                'message' => 'Sprint created successfully!'
-            ]);
-        }
-
         return $this->response->setJSON([
-            'status'  => 'error',
-            'message' => 'Failed to create sprint'
+            'status'  => $saved ? 'success' : 'error',
+            'message' => $saved ? 'Sprint created successfully!' : 'Failed to create sprint'
         ]);
     }
 
-    // AJAX: Get Sprints for selected Project
     public function getSprints($projectID)
     {
         $sprints = $this->sprintModel
@@ -99,20 +90,74 @@ class Sprints extends BaseController
     }
 
     // AJAX: Get Backlog + Current Sprint Tasks
-    public function getTasks($sprintID)
+    public function getTasks($projectID, $sprintID = null)
     {
+        // Backlog tasks (no sprint)
         $backlog = $this->tasksModel
-            ->where('sprintID IS NULL')
+            ->where('projectID', $projectID)
+            ->where('sprintID', null)
             ->findAll();
-
-        $currentSprintTasks = $this->tasksModel
-            ->where('sprintID', $sprintID)
-            ->findAll();
-
+    
+        // Force backlog status to "Backlog"
+        foreach ($backlog as &$task) {
+            $task['status'] = 'Backlog';
+            $task['assigneeName'] = $task['assigneeID'] 
+                ? ($this->userModel->find($task['assigneeID'])['name'] ?? 'Unknown') 
+                : 'Unassigned';
+        }
+    
+        // Current sprint tasks (if sprint selected)
+        $currentSprintTasks = [];
+        if (!empty($sprintID)) {
+            $currentSprintTasks = $this->tasksModel
+                ->where('sprintID', $sprintID)
+                ->findAll();
+    
+            foreach ($currentSprintTasks as &$task) {
+                $task['assigneeName'] = $task['assigneeID'] 
+                    ? ($this->userModel->find($task['assigneeID'])['name'] ?? 'Unknown') 
+                    : 'Unassigned';
+            }
+        }
+    
         return $this->response->setJSON([
             'status'             => 'success',
             'backlog'            => $backlog,
             'currentSprintTasks' => $currentSprintTasks
+        ]);
+    }
+    
+
+    // AJAX: Add Task to Sprint
+    public function addToSprint()
+    {
+        $taskID   = $this->request->getPost('taskID');
+        $sprintID = $this->request->getPost('sprintID');
+
+        if (!$taskID || !$sprintID) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'Invalid task or sprint ID'
+            ]);
+        }
+
+        $task = $this->tasksModel->find($taskID);
+        if (!$task) {
+            return $this->response->setJSON([
+                'status'  => 'error',
+                'message' => 'Task not found'
+            ]);
+        }
+
+        $updated = $this->tasksModel->update($taskID, [
+            'sprintID'     => $sprintID,
+            'status'       => 'To Do',
+            'dateModified' => date('Y-m-d H:i:s')
+        ]);
+
+        return $this->response->setJSON([
+            'status'  => $updated ? 'success' : 'error',
+            'message' => $updated ? 'Task added to sprint successfully!' : 'Failed to add task to sprint'
         ]);
     }
 }

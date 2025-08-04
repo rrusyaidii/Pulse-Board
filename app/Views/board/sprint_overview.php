@@ -1,5 +1,4 @@
 <?= $this->extend('layout/master') ?>
-
 <?= $this->section('main-content') ?>
 
 <div class="container-fluid">
@@ -64,6 +63,7 @@
               <th>Title</th>
               <th>Priority</th>
               <th>Status</th>
+              <th>Assignee</th>
               <th>Action</th>
             </tr>
           </thead>
@@ -108,19 +108,10 @@
 <?= $this->section('script') ?>
 <script>
 $(document).ready(function () {
-
-    // DataTables: Show entries + search top, info + pagination bottom
     const tableOptions = {
-        dom:
-            // Top row: Length selector + Search
-            '<"d-flex justify-content-between align-items-center mb-2"l f>' +
-            // Table
-            't' +
-            // Bottom row: Info + Pagination on one line
-            '<"d-flex justify-content-between align-items-center mt-2"i p>',
+        dom: '<"d-flex justify-content-between align-items-center mb-2"l f>t<"d-flex justify-content-between align-items-center mt-2"i p>',
         pageLength: 5,
-        lengthChange:false,
-        lengthMenu: [5, 10, 25, 50],
+        lengthChange: false,
         language: {
             emptyTable: "No data available",
             search: "_INPUT_",
@@ -142,76 +133,92 @@ $(document).ready(function () {
         $('#currentTasksCount').text('0 Tasks');
 
         if (projectID) {
+            // Load sprints dropdown
             $.get('<?= base_url('board/sprints/getSprints') ?>/' + projectID, function (res) {
-                console.log('getSprints response:', res);
-
                 if (res.status === 'success') {
                     res.sprints.forEach(sprint => {
                         $('#sprintSelect').append(
                             `<option value="${sprint.sprintID}">${sprint.name} (${sprint.startDate} - ${sprint.endDate})</option>`
                         );
                     });
-                } else {
-                    Swal.fire('Error', 'Failed to load sprints', 'error');
                 }
             }, 'json');
+
+            // Load all backlog tasks initially (no sprint selected)
+            loadTasks(projectID, '');
         }
     });
 
-    // Load tasks on sprint select
+    // Sprint selection changes table
     $('#sprintSelect').change(function () {
+        let projectID = $('#projectSelect').val();
         let sprintID = $(this).val();
-        console.log('Sprint changed:', sprintID);
+        loadTasks(projectID, sprintID);
+    });
 
-        if (!sprintID) {
-            backlogTable.clear().draw();
-            currentSprintTable.clear().draw();
-            $('#backlogCount').text('0 Items');
-            $('#currentTasksCount').text('0 Tasks');
-            return;
-        }
-
-        $.get('<?= base_url('board/sprints/getTasks') ?>/' + sprintID, function (res) {
-            console.log('getTasks response:', res);
-
+    // Load tasks into tables
+    function loadTasks(projectID, sprintID) {
+        $.get('<?= base_url('board/sprints/getTasks') ?>/' + projectID + '/' + (sprintID || ''), function (res) {
             if (res.status === 'success') {
                 backlogTable.clear();
                 currentSprintTable.clear();
 
-                // Populate backlog
+                // Backlog
                 if (res.backlog.length > 0) {
                     let backlogRows = res.backlog.map(task => [
                         task.taskID,
                         task.name,
-                        `<span class="badge ${task.priority=='High'?'bg-danger':(task.priority=='Medium'?'bg-warning text-dark':'bg-success')}">${task.priority}</span>`,
-                        `<span class="badge bg-secondary">${task.status ?? 'Backlog'}</span>`,
-                        `<button class="btn btn-sm btn-primary"><i class="fa fa-plus me-1"></i> Add to Sprint</button>`
+                        `<span class="badge ${task.priority=='High'?'bg-danger':(task.priority=='Normal'?'bg-warning text-dark':'bg-success')}">${task.priority}</span>`,
+                        `<span class="badge bg-secondary">Backlog</span>`,
+                        task.assigneeName ?? 'Unassigned',
+                        `<button class="btn btn-sm btn-primary add-to-sprint"><i class="fa fa-plus me-1"></i> Add to Sprint</button>`
                     ]);
                     backlogTable.rows.add(backlogRows);
                 }
                 backlogTable.draw();
                 $('#backlogCount').text(res.backlog.length + ' Items');
 
-                // Populate current sprint tasks
+                // Current Sprint Tasks (only if sprint selected)
                 if (res.currentSprintTasks.length > 0) {
                     let sprintRows = res.currentSprintTasks.map(task => [
                         task.taskID,
                         task.name,
-                        `<span class="badge ${task.status=='Done'?'bg-success':(task.status=='In Progress'?'bg-warning text-dark':'bg-secondary')}">${task.status}</span>`,
-                        `<span class="badge ${task.priority=='High'?'bg-danger':(task.priority=='Medium'?'bg-warning text-dark':'bg-success')}">${task.priority}</span>`,
-                        task.assigneeID ?? 'Unassigned',
+                        `<span class="badge ${task.status=='Completed'?'bg-success':(task.status=='In Progress'?'bg-warning text-dark':'bg-secondary')}">${task.status}</span>`,
+                        `<span class="badge ${task.priority=='High'?'bg-danger':(task.priority=='Normal'?'bg-warning text-dark':'bg-success')}">${task.priority}</span>`,
+                        task.assigneeName ?? 'Unassigned',
                         task.endDate ?? '-'
                     ]);
                     currentSprintTable.rows.add(sprintRows);
                 }
                 currentSprintTable.draw();
                 $('#currentTasksCount').text(res.currentSprintTasks.length + ' Tasks');
-            } else {
-                Swal.fire('Error', 'Failed to load tasks', 'error');
             }
         }, 'json');
-    });
+    }
 
+    // Add to Sprint button
+    $('#backlogTable').on('click', '.add-to-sprint', function () {
+        const row = backlogTable.row($(this).closest('tr')).data();
+        const taskID = row[0];
+        const sprintID = $('#sprintSelect').val();
+
+        if (!sprintID) {
+            Swal.fire('Warning', 'Please select a sprint first!', 'warning');
+            return;
+        }
+
+        $.post('<?= base_url('board/sprints/addToSprint') ?>', 
+            { taskID: taskID, sprintID: sprintID }, 
+            function (res) {
+                if (res.status === 'success') {
+                    Swal.fire('Success', res.message, 'success');
+                    $('#sprintSelect').trigger('change');
+                } else {
+                    Swal.fire('Error', res.message, 'error');
+                }
+            }, 
+        'json');
+    });
 });
 </script>
 <?= $this->endSection() ?>

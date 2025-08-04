@@ -34,7 +34,7 @@
             <div class="mb-3 row">
               <label class="col-sm-4 col-form-label">Task Name</label>
               <div class="col-sm-8">
-                <input class="form-control" name="name" type="text" placeholder="Task Name" required>
+                <input class="form-control" name="name" type="text" placeholder="Task Name" autocomplete="off" required>
               </div>
             </div>
 
@@ -49,6 +49,19 @@
                 </select>
               </div>
             </div>
+            <!-- <div class="mb-3 row">
+              <label class="col-sm-4 col-form-label">Task Status</label>
+              <div class="col-sm-8">
+                <select class="form-select" name="status">
+                <option value="">Select Task status</option>
+                <option value="To Do">To Do</option>
+                <option value="In Progress">In Progress</option>
+                <option value="In Review">In Review</option>
+                <option value="Blocked">Blocked</option>
+                <option value="Completed">Completed</option>
+                </select>
+              </div>
+            </div> -->
           </div>
 
           <!-- Right Column -->

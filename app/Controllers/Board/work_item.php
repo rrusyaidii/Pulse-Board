@@ -6,7 +6,7 @@ use App\Controllers\BaseController;
 use App\Models\ProjectsModel;
 use App\Models\SprintModel;
 use App\Models\TasksModel;
-use App\Models\UserModel; // ✅ Add User Model
+use App\Models\UserModel;
 
 class Work_Item extends BaseController
 {
@@ -20,26 +20,21 @@ class Work_Item extends BaseController
         $this->projectsModel = new ProjectsModel();
         $this->sprintModel   = new SprintModel();
         $this->tasksModel    = new TasksModel();
-        $this->userModel     = new UserModel(); // ✅ Initialize User Model
+        $this->userModel     = new UserModel();
     }
 
-    /**
-     * Work Item Overview Page
-     */
+    /** Work Item Overview Page */
     public function index()
     {
-        $data = [
+        return view('board/work_item_overview', [
             'title'       => 'Work Items',
-            'breadcrumbs' => 'Work Item',
-            'projects'    => $this->projectsModel->findAll()
-        ];
-
-        return view('board/work_item_overview', $data);
+            'breadcrumbs' => 'Work Items',
+            'projects'    => $this->projectsModel->findAll(),
+            'users'       => $this->userModel->findAll() // ✅ send user list for dropdown
+        ]);
     }
 
-    /**
-     * AJAX: Get Sprints by Project
-     */
+    /** AJAX: Get Sprints by Project */
     public function getSprints($projectID)
     {
         $sprints = $this->sprintModel
@@ -53,50 +48,98 @@ class Work_Item extends BaseController
         ]);
     }
 
-    /**
-     * AJAX: Get Work Items for DataTable
-     */
+    /** AJAX: Get Work Items for DataTable */
     public function getTasks()
     {
         $projectID = $this->request->getGet('projectID');
         $sprintID  = $this->request->getGet('sprintID');
 
         $builder = $this->tasksModel;
-
-        if ($projectID) {
-            $builder = $builder->where('projectID', $projectID);
-        }
-        if ($sprintID) {
-            $builder = $builder->where('sprintID', $sprintID);
-        }
+        if ($projectID) $builder = $builder->where('projectID', $projectID);
+        if ($sprintID)  $builder = $builder->where('sprintID', $sprintID);
 
         $tasks = $builder->findAll();
-
-        // Format for DataTable
         $data = [];
+
         foreach ($tasks as $task) {
-            // ✅ Get Assignee Name
             $assigneeName = 'Unassigned';
             if (!empty($task['assigneeID'])) {
                 $user = $this->userModel->find($task['assigneeID']);
-                if ($user) {
-                    $assigneeName = esc($user['name']);
-                }
+                if ($user) $assigneeName = esc($user['name']);
             }
+
+            $sprintName = !empty($task['sprintID']) ? 'Sprint '.$task['sprintID'] : 'Backlog';
+            $taskLink = '<a href="'.base_url('board/task/view/'.$task['taskID']).'">'.esc($task['name']).'</a>';
 
             $data[] = [
                 $task['taskID'],
-                esc($task['name']),
-                '<span class="badge bg-info text-dark">Task</span>',
-                '<span class="badge '.($task['status']=='Done'?'bg-success':($task['status']=='In Progress'?'bg-warning text-dark':'bg-secondary')).'">'.esc($task['status']).'</span>',
-                '<span class="badge '.($task['priority']=='High'?'bg-danger':($task['priority']=='Medium'?'bg-warning text-dark':'bg-success')).'">'.esc($task['priority']).'</span>',
-                $assigneeName, // ✅ Show Name
+                $taskLink,
+                $sprintName,
+                $task['status'] ?? 'Backlog',
+                $task['priority'] ?? 'Low',
+                $assigneeName,
+                $task['assigneeID'] ?? '',
                 $task['endDate'] ?? '-'
             ];
         }
 
-        return $this->response->setJSON([
-            'data' => $data
-        ]);
+        return $this->response->setJSON(['data' => $data]);
+    }
+
+    /** AJAX: Update Status */
+    public function updateStatus()
+    {
+        $taskID = $this->request->getPost('taskID');
+        $status = $this->request->getPost('status');
+
+        if ($taskID && $status) {
+            $updated = $this->tasksModel->update($taskID, [
+                'status'       => $status,
+                'dateModified' => date('Y-m-d H:i:s')
+            ]);
+            return $this->response->setJSON([
+                'status'  => $updated ? 'success' : 'error',
+                'message' => $updated ? 'Status updated successfully.' : 'Failed to update status.'
+            ]);
+        }
+        return $this->response->setJSON(['status' => 'error', 'message' => 'Invalid request']);
+    }
+
+    /** AJAX: Update Priority */
+    public function updatePriority()
+    {
+        $taskID   = $this->request->getPost('taskID');
+        $priority = $this->request->getPost('priority');
+
+        if ($taskID && $priority) {
+            $updated = $this->tasksModel->update($taskID, [
+                'priority'     => $priority,
+                'dateModified' => date('Y-m-d H:i:s')
+            ]);
+            return $this->response->setJSON([
+                'status'  => $updated ? 'success' : 'error',
+                'message' => $updated ? 'Priority updated successfully.' : 'Failed to update priority.'
+            ]);
+        }
+        return $this->response->setJSON(['status' => 'error', 'message' => 'Invalid request']);
+    }
+
+    /** AJAX: Update Assignee */
+    public function updateAssignee()
+    {
+        $taskID    = $this->request->getPost('taskID');
+        $assigneeID = $this->request->getPost('assigneeID') ?: null;
+
+        if ($taskID) {
+            $updated = $this->tasksModel->update($taskID, [
+                'assigneeID'   => $assigneeID,
+                'dateModified' => date('Y-m-d H:i:s')
+            ]);
+            return $this->response->setJSON([
+                'status'  => $updated ? 'success' : 'error',
+                'message' => $updated ? 'Assignee updated successfully.' : 'Failed to update assignee.'
+            ]);
+        }
+        return $this->response->setJSON(['status' => 'error', 'message' => 'Invalid request']);
     }
 }

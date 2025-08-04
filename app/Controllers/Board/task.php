@@ -73,7 +73,7 @@ class Task extends BaseController
             'priority'    => $this->request->getPost('priority'),
             'type'        => $this->request->getPost('type'),
             'description' => $this->request->getPost('description'),
-            'status'      => 'To Do',
+            'status'      => 'Backlog',
             'dateCreated' => date('Y-m-d H:i:s'),
             'dateModified'=> date('Y-m-d H:i:s'),
         ];
@@ -194,13 +194,17 @@ class Task extends BaseController
         $formatted = [];
 
         foreach ($tasks as $task) {
+            $assigneeName = $task['assigneeID'] 
+                ? ($this->usersModel->find($task['assigneeID'])['name'] ?? 'Unknown') 
+                : 'Unassigned';
+
             $formatted[] = [
                 $task['taskID'],
                 '<a href="'.base_url('board/task/view/'.$task['taskID']).'">'.esc($task['name']).'</a>',
                 $task['sprintID'] ? 'Sprint '.$task['sprintID'] : 'Backlog',
                 'Project '.$task['projectID'],
                 '<span class="badge bg-secondary">'.esc($task['status']).'</span>',
-                $task['assigneeID'] ? 'User '.$task['assigneeID'] : 'Unassigned',
+                esc($assigneeName), 
                 '<span class="badge '.(
                     $task['priority']=='High'?'bg-danger':
                     ($task['priority']=='Normal'?'bg-warning text-dark':'bg-success')
