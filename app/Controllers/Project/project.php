@@ -7,6 +7,7 @@ use App\Models\ProjectsModel;
 use App\Models\OrganizationModel;
 use App\Models\DepartmentModel;
 use App\Models\ClientsModel;
+use App\Models\UserProjectsModel;
 
 class Project extends BaseController
 {
@@ -40,7 +41,7 @@ class Project extends BaseController
         $clientsModel = new ClientsModel();
 
         $userModel = new \App\Models\UserModel(); // use your actual User model
-$data['users'] = $userModel->findAll();
+        $data['users'] = $userModel->findAll();
 
 
         $data['organizations'] = $organizationModel->findAll();
@@ -50,26 +51,43 @@ $data['users'] = $userModel->findAll();
         return view('project/create', $data);
     }
 
-    public function createProject()
-    {
-        $model = new ProjectsModel();
-        $now = date('Y-m-d H:i:s');
+   public function createProject()
+{
+    $model = new ProjectsModel();
+    $userProjectModel = new UserProjectsModel();
+    $now = date('Y-m-d H:i:s');
 
-        $data = [
-            'orgID' => $this->request->getPost('orgID'),
-            'deptID' => $this->request->getPost('deptID'),
-            'clientID' => $this->request->getPost('clientID'),
-            'name' => $this->request->getPost('name'),
-            'startDate' => $this->request->getPost('startDate'),
-            'endDate' => $this->request->getPost('endDate'),
-            'status' => $this->request->getPost('status'),
-            'dateCreated' => $now,
-            'dateModified' => $now,
-        ];
+    $data = [
+        'orgID'        => $this->request->getPost('orgID'),
+        'deptID'       => $this->request->getPost('deptID'),
+        'clientID'     => $this->request->getPost('clientID'),
+        'name'         => $this->request->getPost('name'),
+        'startDate'    => $this->request->getPost('startDate'),
+        'endDate'      => $this->request->getPost('endDate'),
+        'status'       => $this->request->getPost('status'),
+        'dateCreated'  => $now,
+        'dateModified' => $now,
+    ];
 
-        // dd($data);
-        $model->insert($data);
-        return redirect()->to(base_url('project/project'))->with('success', 'Project created successfully.');
+    $model->insert($data);
+
+    $projectID = $model->getInsertID();
+
+    $userIDs = $this->request->getPost('userID'); 
+    $roles   = $this->request->getPost('roles');  
+
+    if (!empty($userIDs)) {
+        foreach ($userIDs as $i => $userID) {
+    $userProjectModel->insert([
+        'projectID' => $projectID,
+        'userID'    => $userID,
+        'role'      => $roles[$i] ?? 'developer',
+    ]);
+}
+
     }
+
+    return redirect()->to(base_url('project/project'))->with('success', 'Project created successfully.');
+}
 
 }
