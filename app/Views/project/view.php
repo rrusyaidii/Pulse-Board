@@ -111,16 +111,17 @@
                             <label class="form-label" for="name">Project Status</label>
                             <input class="form-control" id="status" name="status" type="text" value="<?= esc(ucfirst($project['status'])) ?>" readonly>
                         </div>
+                        <div class="col-md-6">
+                          <label class="form-label" for="contractValue">Contract Value (RM)</label>
+                          <input class="form-control" id="contractValue" name="contractValue" type="text" 
+                                value="<?= number_format($project['contractValue'], 0) ?>" readonly>
+                        </div>
 
                         <div class="col-md-6">
-                        <label class="form-label" for="name">Contract Value (RM)</label>
-                        <input class="form-control" id="contractValue" name="contractValue" type="text" value="<?= esc($project['contractValue']) ?>" readonly>
-                      </div>
-
-                      <div class="col-md-6">
-                        <label class="form-label" for="name">Cost</label>
-                        <input class="form-control" id="cost" name="cost" type="text" value="<?= esc($project['cost']) ?>" readonly>
-                      </div>
+                          <label class="form-label" for="cost">Cost (RM)</label>
+                          <input class="form-control" id="cost" name="cost" type="text" 
+                                value="<?= number_format($project['cost'], 0) ?>" readonly>
+                        </div>
 
                       <div class="col-xs-12">
                         <label class="form-label" for="description">Description</label>
