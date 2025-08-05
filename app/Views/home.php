@@ -126,13 +126,12 @@
       <div class="card shadow-sm border-0 h-100">
         <div class="card-header d-flex justify-content-between align-items-center bg-white border-bottom">
           <h5 class="fw-semibold text-dark mb-0">
-            <i class="fa fa-folder-open me-2 text-primary"></i>My Projects
+            <i class="fa fa-folder-open me-2 text-primary"></i>Projects
           </h5>
           <span class="badge bg-light text-dark"><?= count($myProjects) ?> Projects</span>
         </div>
         <div class="card-body p-3" style="max-height: 560px; overflow-y: auto;">
           <div class="row g-3">
-
             <?php if (!empty($myProjects)): ?>
               <?php foreach ($myProjects as $project): 
                   $status = strtolower($project['status']);
