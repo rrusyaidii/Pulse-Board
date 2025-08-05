@@ -8,6 +8,7 @@ use App\Models\OrganizationModel;
 use App\Models\DepartmentModel;
 use App\Models\ClientsModel;
 use App\Models\UserProjectsModel;
+use App\Models\TasksModel;
 
 class Project extends BaseController
 {
@@ -16,6 +17,7 @@ class Project extends BaseController
     $model = new ProjectsModel();
     $userID = session()->get('userID');
     $role = session()->get('role');
+    $taskStats = $this->getTaskStatsByProject();
 
     $projects = $model->getProjectsWithJoins($userID, $role);
 
@@ -23,6 +25,8 @@ class Project extends BaseController
         'title' => 'Project Overview',
         'breadcrumbs' => 'My Project',
         'projects' => $projects,
+        'taskStats'   => $taskStats,
+
     ];
 
     return view('project/project_overview', $data);
@@ -231,6 +235,27 @@ class Project extends BaseController
 
         return view('project/view', $data);
     }
+
+    public function getTaskStatsByProject()
+    {
+        $tasksModel = new TasksModel(); 
+
+        $taskStats = $tasksModel
+            ->select("projectID,
+                    COUNT(*) as total_tasks,
+                    SUM(CASE WHEN status IN ('To Do', 'In Progress', 'In Review') THEN 1 ELSE 0 END) as in_progress,
+                    SUM(CASE WHEN status = 'Completed' THEN 1 ELSE 0 END) as total_completed")
+            ->groupBy('projectID')
+            ->findAll();
+
+        $statsMap = [];
+        foreach ($taskStats as $stat) {
+            $statsMap[$stat['projectID']] = $stat;
+        }
+
+        return $statsMap;
+    }
+
 
 }
 
