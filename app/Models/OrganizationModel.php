@@ -11,7 +11,7 @@ class OrganizationModel extends Model
     protected $useAutoIncrement = true;
 
     protected $returnType       = 'array';
-    protected $allowedFields    = ['name', 'status', 'dateCreated', 'dateModified'];
+    protected $allowedFields    = ['name', 'address', 'status', 'dateCreated', 'dateModified'];
 
     protected $useTimestamps = false;
 }

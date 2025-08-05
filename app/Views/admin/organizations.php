@@ -31,7 +31,7 @@
                     <div class="col-md-6">
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group mb-0 me-0"></div><a class="btn btn-primary" href="<?= base_url('project/project/create') ?>"> <i data-feather="plus-square"> </i>Create New Organization</a>
+                        <div class="form-group mb-0 me-0"></div><a class="btn btn-primary" href="<?= base_url('admin/createOrganizations') ?>"> <i data-feather="plus-square"> </i>Create New Organization</a>
                     </div>
                 </div>
             </div>
