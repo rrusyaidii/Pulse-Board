@@ -17,7 +17,6 @@ class Project extends BaseController
     $userID = session()->get('userID');
     $role = session()->get('role');
 
-    // ✅ Pass both userID and role
     $projects = $model->getProjectsWithJoins($userID, $role);
 
     $data = [
@@ -29,6 +28,33 @@ class Project extends BaseController
     return view('project/project_overview', $data);
 }
 
+    public function archive()
+    {
+        $db     = \Config\Database::connect();
+        $userID = session()->get('userID');
+        $role   = session()->get('role');
+
+        $builder = $db->table('projects')
+            ->select('projects.*, clients.name AS clientName, department.name AS deptName')
+            ->join('clients', 'clients.clientID = projects.clientID', 'left')
+            ->join('department', 'department.deptID = projects.deptID', 'left')
+            ->join('userprojects', 'userprojects.projectID = projects.projectID', 'left')
+            ->where('projects.status', 'archived');
+
+        if ($role !== 'admin') {
+            $builder->where('userprojects.userID', $userID);
+        }
+
+        $projects = $builder->get()->getResultArray();
+
+        $data = [
+            'title'       => 'Archived Projects',
+            'breadcrumbs' => 'Archived Projects',
+            'projects'    => $projects,
+        ];
+
+        return view('project/archived', $data);
+    }
 
 
     public function create()

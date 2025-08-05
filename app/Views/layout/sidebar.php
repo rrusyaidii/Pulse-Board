@@ -58,7 +58,7 @@
             </a>
             <ul class="sidebar-submenu">
               <li><a href="<?= base_url("project/project") ?>">My Projects</a></li>
-              <li><a href="<?= base_url() ?>">Archived Projects</a></li>
+              <li><a href="<?= base_url("project/project/archive") ?>">Archived Projects</a></li>
               <!-- <li><a href="<?= base_url() ?>">Departments Projects??</a></li> -->
             </ul>
           </li>
