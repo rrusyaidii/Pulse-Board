@@ -1,3 +1,11 @@
+<style>
+.header-logo-wrapper .logo-wrapper .new-logo {
+  /* This is where your new logo styles will go */
+  width: 100px;
+  height: 35px;
+  object-fit: cover;
+}
+</style>
 <!-- Page Header Start-->
 <div class="page-header">
   <div class="header-wrapper row m-0">
@@ -13,7 +21,7 @@
       </div>
     </form>
     <div class="header-logo-wrapper col-auto p-0">
-      <div class="logo-wrapper"><a href="<?= base_url("/") ?>"><img class="img-fluid" src="<?= base_url() ?>/assets/images/logo/logo.png" alt=""></a></div>
+      <div class="logo-wrapper"><a href="<?= base_url("/") ?>"><img class="img-fluid new-logo" src="<?= base_url() ?>/assets/images/logo/logodebug.png" alt=""></a></div>
       <div class="toggle-sidebar"><i class="status_toggle middle sidebar-toggle" data-feather="align-center"></i></div>
     </div>
 
