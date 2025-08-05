@@ -68,6 +68,8 @@ class Project extends BaseController
             'endDate'      => $this->request->getPost('endDate'),
             'status'       => $this->request->getPost('status'),
             'description'  => $this->request->getPost('description'),
+            'contractValue' => $this->request->getPost('contractValue'),
+            'cost' => $this->request->getPost('cost'),
             'dateCreated'  => $now,
             'dateModified' => $now,
         ];
@@ -142,6 +144,8 @@ class Project extends BaseController
             'endDate'      => $this->request->getPost('endDate'),
             'status'       => $this->request->getPost('status'),
             'description'  => $this->request->getPost('description'),
+            'contractValue' => $this->request->getPost('contractValue'),
+            'cost' => $this->request->getPost('cost'),
             'dateModified' => $now,
         ];
 

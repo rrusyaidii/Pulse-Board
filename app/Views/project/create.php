@@ -88,7 +88,6 @@
                       <div class="col-md-6">
                         <label class="form-label" for="endDate">End Date</label>
                         <input class="form-control" id="endDate" name="endDate" type="date">
-                        <div class="valid-feedback">Looks good!</div>
                       </div>
 
                       <div class="col-md-6 ">
@@ -99,13 +98,26 @@
                           <option value="active">Active</option>
                           <option value="completed">Completed</option>
                           <option value="cancelled">Cancelled</option>
+                          <option value="archived">Archived</option>
                         </select>  
                       </div>
 
-                      <div class="col-xs-12">
+                      <div class="col-md-6">
+                          <label for="contractValue">Contract Value (RM)</label>
+                          <input class="form-control" id="contractValue" name="contractValue" type="number" step="0.01"
+                              value="<?= esc($project['contractValue'] ?? '') ?>">
+                      </div>
+
+                      <div class="col-md-6">
+                          <label for="cost">Cost (RM)</label>
+                          <input class="form-control" id="cost" name="cost" type="number" step="0.01"
+                              value="<?= esc($project['cost'] ?? '') ?>">
+                      </div>
+
+                    <div class="col-xs-12">
                         <label class="form-label" for="description">Description</label>
                         <textarea class="form-control" id="description" name="description" rows="4" placeholder="Enter project description here..." required></textarea>
-                      </div>
+                    </div>
 
 
                     </div>

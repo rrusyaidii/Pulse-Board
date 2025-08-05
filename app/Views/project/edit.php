@@ -105,7 +105,20 @@
                             <option value="active" <?= $project['status'] == 'active' ? 'selected' : '' ?>>Active</option>
                             <option value="completed" <?= $project['status'] == 'completed' ? 'selected' : '' ?>>Completed</option>
                             <option value="cancelled" <?= $project['status'] == 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                            <option value="archived" <?= $project['status'] == 'archived' ? 'selected' : '' ?>>Archived</option>
                         </select>
+                      </div>
+
+                      <div class="col-md-6">
+                          <label for="contractValue">Contract Value (RM)</label>
+                          <input class="form-control" id="contractValue" name="contractValue" type="number" step="0.01"
+                              value="<?= esc($project['contractValue'] ?? '') ?>">
+                      </div>
+
+                      <div class="col-md-6">
+                          <label for="cost">Cost (RM)</label>
+                          <input class="form-control" id="cost" name="cost" type="number" step="0.01"
+                              value="<?= esc($project['cost'] ?? '') ?>">
                       </div>
 
                       <div class="col-xs-12">

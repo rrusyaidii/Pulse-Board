@@ -13,7 +13,7 @@ class ProjectsModel extends Model
     protected $returnType       = 'array';
     protected $allowedFields    = [
         'orgID', 'deptID', 'clientID', 'name',
-        'startDate', 'endDate', 'status', 'dateCreated', 'dateModified','description'
+        'startDate', 'endDate', 'status', 'dateCreated', 'dateModified','description', 'contractValue', 'cost'
     ];
 
     public function getProjectsWithJoins($userID, $role)

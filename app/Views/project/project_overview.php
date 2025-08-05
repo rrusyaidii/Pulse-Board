@@ -108,9 +108,9 @@
                         <div class="row details mb-2">
                             <div class="col-6"><span>Total Task</span></div>
                             <div class="col-6 text-primary">0</div>
-                            <div class="col-6"><span>Total Open Task</span></div>
+                            <div class="col-6"><span>In Progress</span></div>
                             <div class="col-6 text-primary">0</div>
-                            <div class="col-6"><span>Total Resolved</span></div>
+                            <div class="col-6"><span>Total Completed</span></div>
                             <div class="col-6 text-primary">0</div>
                         </div>
 

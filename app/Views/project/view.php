@@ -45,8 +45,8 @@
                       <div class="col-md-6">
                         <label class="form-label" for="name">Project Name</label>
                         <input class="form-control" id="name" name="name" type="text" value="<?= esc($project['name']) ?>" readonly>
-
                       </div>
+
                       <div class="col-md-6">
                         <label class="form-label" for="orgID">Organization</label>
                         <?php
@@ -111,6 +111,16 @@
                             <label class="form-label" for="name">Project Status</label>
                             <input class="form-control" id="status" name="status" type="text" value="<?= esc(ucfirst($project['status'])) ?>" readonly>
                         </div>
+
+                        <div class="col-md-6">
+                        <label class="form-label" for="name">Contract Value (RM)</label>
+                        <input class="form-control" id="contractValue" name="contractValue" type="text" value="<?= esc($project['contractValue']) ?>" readonly>
+                      </div>
+
+                      <div class="col-md-6">
+                        <label class="form-label" for="name">Cost</label>
+                        <input class="form-control" id="cost" name="cost" type="text" value="<?= esc($project['cost']) ?>" readonly>
+                      </div>
 
                       <div class="col-xs-12">
                         <label class="form-label" for="description">Description</label>
