@@ -33,10 +33,10 @@ This system provides:
 
 ## ⚙️ Tech Stack
 
-- **Backend**: 
-- **Database**:
-- **Frontend**: 
-- **API**: 
+- **Backend**: CodeIgniter 4
+- **Database**: MySQL / MariaDB
+- **Frontend**: Bootstrap 5
+- **API**: REST API
 
 ---
 
