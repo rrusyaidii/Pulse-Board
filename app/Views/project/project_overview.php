@@ -106,31 +106,31 @@
 
 
                         <?php
-$stats = $taskStats[$project['projectID']] ?? ['total_tasks' => 0, 'in_progress' => 0, 'total_completed' => 0];
-?>
-<div class="row details mb-2">
-    <div class="col-6"><span>Total Task</span></div>
-    <div class="col-6 text-primary"><?= $stats['total_tasks'] ?></div>
-    <div class="col-6"><span>In Progress</span></div>
-    <div class="col-6 text-primary"><?= $stats['in_progress'] ?></div>
-    <div class="col-6"><span>Total Completed</span></div>
-    <div class="col-6 text-primary"><?= $stats['total_completed'] ?></div>
-</div>
+                        $stats = $taskStats[$project['projectID']] ?? ['total_tasks' => 0, 'in_progress' => 0, 'total_completed' => 0];
+                        ?>
+                        <div class="row details mb-2">
+                            <div class="col-6"><span>Total Task</span></div>
+                            <div class="col-6 text-primary"><?= $stats['total_tasks'] ?></div>
+                            <div class="col-6"><span>In Progress</span></div>
+                            <div class="col-6 text-primary"><?= $stats['in_progress'] ?></div>
+                            <div class="col-6"><span>Total Completed</span></div>
+                            <div class="col-6 text-primary"><?= $stats['total_completed'] ?></div>
+                        </div>
 
-<?php
-$percentage = $stats['total_tasks'] > 0
-    ? round(($stats['total_completed'] / $stats['total_tasks']) * 100)
-    : 0;
-?>
-<div class="project-status mt-2 mb-4">
-    <div class="media mb-1">
-        <p class="mb-0"><?= $percentage ?>%</p>
-        <div class="media-body text-end"><span><?= esc($project['status']) ?></span></div>
-    </div>
-    <div class="progress" style="height: 5px;">
-        <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" style="width: <?= $percentage ?>%;"></div>
-    </div>
-</div>
+                        <?php
+                        $percentage = $stats['total_tasks'] > 0
+                            ? round(($stats['total_completed'] / $stats['total_tasks']) * 100)
+                            : 0;
+                        ?>
+                        <div class="project-status mt-2 mb-4">
+                            <div class="media mb-1">
+                                <p class="mb-0"><?= $percentage ?>%</p>
+                                <div class="media-body text-end"><span><?= esc($project['status']) ?></span></div>
+                            </div>
+                            <div class="progress" style="height: 5px;">
+                                <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" style="width: <?= $percentage ?>%;"></div>
+                            </div>
+                        </div>
 
 
                     <?php if (session()->get('role') === 'admin' || session()->get('role') === 'manager'): ?>

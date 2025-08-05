@@ -34,6 +34,8 @@ class ProjectsModel extends Model
                 ->where('userprojects.userID', $userID);
     }
 
+    $builder->where('projects.status !=', 'archived');
+
     return $builder->findAll();
 }
 

@@ -13,24 +13,24 @@ use App\Models\TasksModel;
 class Project extends BaseController
 {
     public function index()
-{
-    $model = new ProjectsModel();
-    $userID = session()->get('userID');
-    $role = session()->get('role');
-    $taskStats = $this->getTaskStatsByProject();
+    {
+        $model = new ProjectsModel();
+        $userID = session()->get('userID');
+        $role = session()->get('role');
+        $taskStats = $this->getTaskStatsByProject();
 
-    $projects = $model->getProjectsWithJoins($userID, $role);
+        $projects = $model->getProjectsWithJoins($userID, $role);
 
-    $data = [
-        'title' => 'Project Overview',
-        'breadcrumbs' => 'My Project',
-        'projects' => $projects,
-        'taskStats'   => $taskStats,
+        $data = [
+            'title' => 'Project Overview',
+            'breadcrumbs' => 'My Project',
+            'projects' => $projects,
+            'taskStats'   => $taskStats,
 
-    ];
+        ];
 
-    return view('project/project_overview', $data);
-}
+        return view('project/project_overview', $data);
+    }
 
     public function archive()
     {
