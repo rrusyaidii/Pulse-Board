@@ -116,7 +116,7 @@
 
                     </div>
 
-                    <button class="btn btn-primary mt-3" type="submit">Create User</button>
+                    <button class="btn btn-primary mt-3" type="submit"><?= $title ?></button>
                     </form>
             </div>
 

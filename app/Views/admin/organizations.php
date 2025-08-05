@@ -48,6 +48,7 @@
             <th>#</th>
             <th>Organization</th>
             <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
       </table>
@@ -73,8 +74,31 @@
             render: function (data, type, row) {
             return data.charAt(0).toUpperCase() + data.slice(1);
           }
-         }
-        ]
+        },
+        {
+          data: null,
+          orderable: false,
+          searchable: false,
+          render: function (data, type, row) {
+            const editUrl = "<?= base_url('admin/editOrganizations') ?>/" + data.id;
+            const deleteUrl = "<?= base_url('admin/deleteOrganizations') ?>/" + data.id;
+            return `
+              <a href="${editUrl}" class="btn btn-warning me-1" title="Edit" style="padding: 2px 6px; font-size: 0.75rem;">
+                <i data-feather="edit"></i>
+              </a>
+
+              <a href="${deleteUrl}" class="btn btn-sm btn-danger" title="Delete" style="padding: 2px 6px; font-size: 0.75rem;" onclick="return confirm('Are you sure you want to delete this user?')">
+                <i data-feather="trash-2"></i>
+              </a>
+            `;
+          }
+        }
+      ],
+      drawCallback: function(settings) {
+        if (window.feather) {
+          feather.replace();
+        }
+      }
     });
   });
 </script>

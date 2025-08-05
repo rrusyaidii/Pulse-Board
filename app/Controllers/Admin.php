@@ -211,8 +211,8 @@ class Admin extends BaseController
     public function createOrganizations()
     {
         $data = [
-            'title' => 'Create User',
-            'breadcrumbs' => 'Create User',
+            'title' => 'Create Organization',
+            'breadcrumbs' => 'Create Organization',
         ];
 
         $organizationModel = new OrganizationModel();
@@ -234,6 +234,8 @@ class Admin extends BaseController
     {
         $organizationModel = new OrganizationModel();
         date_default_timezone_set('Asia/Kuala_Lumpur');
+        
+        $orgID = $this->request->getPost('orgID');
 
         $data = [
             'name'        => $this->request->getPost('name'),
@@ -242,9 +244,51 @@ class Admin extends BaseController
             'dateCreated' => date('Y-m-d H:i:s'),
         ];
 
-        $organizationModel->insert($data);
+        if (!empty($orgID)) {
+            // update organization
+            $data['updated_at'] = date('Y-m-d H:i:s');
+            $organizationModel->update($orgID, $data);
+            $message = 'User updated successfully.';
+        } else {
+            // create new organization
+            $data['dateCreated'] = date('Y-m-d H:i:s');
+            $organizationModel->insert($data);
+            $orgID = $organizationModel->getInsertID();
+            $message = 'User created successfully.';
+        }
 
-        return redirect()->to(base_url('admin/organizations'))->with('success', 'Organization created successfully.');
+        return redirect()->to(base_url('admin/organizations'))->with('success', $message);
+    }
+
+    public function editOrganizations($orgID)
+    {
+        $organizationModel = new \App\Models\OrganizationModel();
+        $departmentModel = new \App\Models\DepartmentModel();
+        $clientsModel = new \App\Models\ClientsModel();
+
+        $organization = $organizationModel->find($orgID);
+
+        if (!$organization) {
+            return redirect()->to(base_url('admin/organizations'))->with('error', 'Organization not found.');
+        }
+
+        $data = [
+            'title'         => 'Update Organization',
+            'breadcrumbs'   => 'Update Organization',
+            'org'           => $organization,
+            'organizations' => $organizationModel->findAll(),
+            'departments'   => $departmentModel->findAll(),
+            'clients'       => $clientsModel->findAll(),
+        ];
+        
+        return view('admin/createOrganization', $data);
+    }
+
+    public function deleteOrganizations($orgID)
+    {
+        $organizationModel = new \App\Models\OrganizationModel();
+        $organizationModel->where('orgID', $orgID)->set('status', 'inactive')->update();
+        return redirect()->to(base_url('admin/organizations'))->with('success', 'Organization has been deleted.');
     }
 
     public function organizationsAjax()
@@ -257,7 +301,7 @@ class Admin extends BaseController
         $length = $request->getVar('length');
         $search = $request->getVar('search')['value'];
 
-        $orgModel->select('orgID, name, status');
+        $orgModel->select('orgID, name, status')->where('status', 'active');
 
         if (!empty($search)) {
             $orgModel->groupStart()
@@ -274,14 +318,20 @@ class Admin extends BaseController
         foreach ($orgs as $org) {
             $result[] = [
                 'no'            => $i++,
+                'id'            => $org['orgID'],
                 'organization'  => $org['name'],
-                'status'         => $org['status'],
+                'status'        => $org['status'],
             ];
         }
 
+        $totalActive = (new OrganizationModel())
+                    ->where('status', 'active')
+                    ->countAllResults();
+
         $output = [
             'draw'            => intval($draw),
-            'recordsTotal'    => $orgModel->countAll(),
+            'recordsTotal'    => $totalActive,
+            // 'recordsTotal'    => $orgModel->countAll(),
             'recordsFiltered' => $totalFiltered,
             'data'            => $result,
         ];
