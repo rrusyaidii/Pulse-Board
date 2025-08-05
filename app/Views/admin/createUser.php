@@ -41,6 +41,10 @@
            <div class="col-sm-12">
                     <form class="needs-validation" novalidate="" action="<?= base_url('admin/addUser') ?>" method="post">
                     <?= csrf_field() ?>
+  
+                    <?php if (isset($user['userID'])) : ?>
+                      <input type="hidden" name="userID" value="<?= esc($user['userID']) ?>">
+                    <?php endif; ?>
                     
                     <div class="row g-3 mb-3">
                       <div class="col-md-6">
@@ -61,10 +65,13 @@
                     <div class="row g-3 mb-3">
                       <div class="col-md-6">
                         <label class="form-label" for="orgID">Organization</label>
-                        <select class="form-select" id="orgID" name="orgID">
-                          <option selected="" disabled="" value="">Choose Organization...</option>
+                        <select class="form-select" id="orgID" name="orgID" required>
+                          <option disabled value="" <?= empty($user['orgID']) ? 'selected' : '' ?>>Choose Organization...</option>
                           <?php foreach ($organizations as $organization) : ?>
-                            <option value="<?= $organization['orgID']?>"><?=$organization['name']?></option>
+                            <option value="<?= $organization['orgID'] ?>"
+                              <?= (isset($user['orgID']) && $user['orgID'] == $organization['orgID']) ? 'selected' : '' ?>>
+                              <?= esc($organization['name']) ?>
+                            </option>
                           <?php endforeach; ?>
                         </select>
                       </div>
@@ -73,23 +80,25 @@
                     <div class="row g-3 mb-3">
                       <div class="col-md-6">
                         <label class="form-label" for="deptID">Department</label>
-                        <select class="form-select" id="deptID" name="deptID">
-                          <option selected="" disabled="" value="">Choose Department...</option>
-                          <?php foreach ($departments as $department) :?>
-                            <option value="<?= $department['deptID']?>"><?= $department['name']?></option>
+                        <select class="form-select" id="deptID" name="deptID" required>
+                          <option disabled value="" <?= empty($user['deptID']) ? 'selected' : '' ?>>Choose Department...</option>
+                          <?php foreach ($departments as $department) : ?>
+                            <option value="<?= $department['deptID'] ?>"
+                              <?= (isset($user['deptID']) && $user['deptID'] == $department['deptID']) ? 'selected' : '' ?>>
+                              <?= esc($department['name']) ?>
+                            </option>
                           <?php endforeach; ?>
                         </select>
                       </div>
                     </div>
 
                     <div class="row g-3 mb-3">
-                        
                       <div class="col-md-6">
                         <label class="form-label" for="role">Role</label>
-                        <select class="form-select" id="role" name="role" value="<?= isset($user['role']) ? $user['role'] : '' ?>" placeholder="<?= isset($user['role']) ? 'Enter Role' : 'Enter Role' ?>">
-                            <option selected disabled value="">Choose Role...</option>
-                            <option value="manage">Manager</option>
-                            <option value="user">User</option>
+                        <select class="form-select" id="role" name="role" required>
+                          <option disabled value="" <?= empty($user['role']) ? 'selected' : '' ?>>Choose Role...</option>
+                          <option value="Manager" <?= (isset($user['role']) && $user['role'] === 'Manager') ? 'selected' : '' ?>>Manager</option>
+                          <option value="User" <?= (isset($user['role']) && $user['role'] === 'User') ? 'selected' : '' ?>>User</option>
                         </select>
                       </div>
                     </div>

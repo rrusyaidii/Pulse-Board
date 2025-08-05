@@ -111,12 +111,12 @@ class Admin extends BaseController
         }
 
         if (!empty($userID)) {
-            // Update existing user
+            // update user
             $data['updated_at'] = date('Y-m-d H:i:s');
             $userModel->update($userID, $data);
             $message = 'User updated successfully.';
         } else {
-            // Create new user
+            // create new user
             $data['dateCreated'] = date('Y-m-d H:i:s');
             $userModel->insert($data);
             $userID = $userModel->getInsertID();
@@ -140,14 +140,14 @@ class Admin extends BaseController
         }
 
         $data = [
-            'title'         => 'Edit User',
-            'breadcrumbs'   => 'Edit User',
+            'title'         => 'Update User',
+            'breadcrumbs'   => 'Update User',
             'user'          => $user,
             'organizations' => $organizationModel->findAll(),
             'departments'   => $departmentModel->findAll(),
             'clients'       => $clientsModel->findAll(),
         ];
-        //  dd($data);
+        
         return view('admin/createUser', $data);
     }
 

@@ -85,10 +85,11 @@
             const editUrl = "<?= base_url('admin/editUser') ?>/" + data.id;
             const deleteUrl = "<?= base_url('admin/deleteUser') ?>/" + data.id;
             return `
-              <a href="${editUrl}" class="btn btn-sm btn-warning me-1" title="Edit">
+              <a href="${editUrl}" class="btn btn-warning me-1" title="Edit" style="padding: 2px 6px; font-size: 0.75rem;">
                 <i data-feather="edit"></i>
               </a>
-              <a href="${deleteUrl}" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this user?')">
+
+              <a href="${deleteUrl}" class="btn btn-sm btn-danger" title="Delete" style="padding: 2px 6px; font-size: 0.75rem;" onclick="return confirm('Are you sure you want to delete this user?')">
                 <i data-feather="trash-2"></i>
               </a>
             `;
