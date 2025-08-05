@@ -6,39 +6,62 @@ use App\Controllers\BaseController;
 use App\Models\ProjectsModel;
 use App\Models\SprintModel;
 use App\Models\TasksModel;
-use App\Models\UserModel; // Import the UserModel
+use App\Models\UserModel;
 
 class Kanban extends BaseController
 {
     protected $projectsModel;
     protected $sprintModel;
     protected $tasksModel;
-    protected $usersModel; 
+    protected $usersModel;
 
     public function __construct()
     {
         $this->projectsModel = new ProjectsModel();
         $this->sprintModel   = new SprintModel();
         $this->tasksModel    = new TasksModel();
-        $this->usersModel    = new UserModel(); 
+        $this->usersModel    = new UserModel();
     }
 
     public function index()
     {
+        $db     = \Config\Database::connect();
+        $userID = session()->get('userID');
+        $role   = session()->get('role');
+
+        $builder = $db->table('projects')
+            ->select('projects.*')
+            ->join('userprojects', 'userprojects.projectID = projects.projectID', 'inner');
+
+        if ($role !== 'admin') {
+            $builder->where('userprojects.userID', $userID);
+        }
+
+        $projects = $builder->get()->getResultArray();
+
         $data = [
             'title'       => 'Kanban Board',
             'breadcrumbs' => 'Kanban Board',
-            'projects'    => $this->projectsModel->findAll()
+            'projects'    => $projects
         ];
+
         return view('board/kanban', $data);
     }
 
     public function kanbanData($projectID, $sprintID = null)
     {
-        $tasksQuery = $this->tasksModel->where('projectID', $projectID);
+        $userID = session()->get('userID');
+        $role   = session()->get('role');
 
-        if (!empty($sprintID) && $sprintID !== 'all') { 
+        $tasksQuery = $this->tasksModel->where('projectID', $projectID);
+        if (!empty($sprintID) && $sprintID !== 'all') {
             $tasksQuery->where('sprintID', $sprintID);
+        }
+        if ($role !== 'admin') {
+            $tasksQuery->groupStart()
+                       ->where('assigneeID', $userID)
+                       ->orWhere('createdBy', $userID)
+                       ->groupEnd();
         }
 
         $tasks = $tasksQuery->findAll();
@@ -52,27 +75,17 @@ class Kanban extends BaseController
         ];
 
         foreach ($tasks as $task) {
-            $project = $this->projectsModel->find($task['projectID']);
+            $project  = $this->projectsModel->find($task['projectID']);
             $assignee = $task['assigneeID'] ? $this->usersModel->find($task['assigneeID']) : null;
 
-            $priorityClass = '';
-            switch (strtolower($task['priority'])) {
-                case 'high':
-                case 'blocker':
-                    $priorityClass = 'badge-danger';
-                    break;
-                case 'normal':
-                    $priorityClass = 'badge-warning text-dark';
-                    break;
-                case 'low':
-                    $priorityClass = 'badge-success';
-                    break;
-                default:
-                    $priorityClass = 'badge-secondary';
-                    break;
-            }
+            $priorityClass = match(strtolower($task['priority'] ?? '')) {
+                'high', 'blocker' => 'badge-danger',
+                'normal'          => 'badge-warning text-dark',
+                'low'             => 'badge-success',
+                default           => 'badge-secondary'
+            };
 
-            $typeClass = 'badge-primary'; 
+            $typeClass = 'badge-primary';
 
             $cardHTML = '
                 <a href="' . base_url('board/task/view/' . $task['taskID']) . '" class="kanban-item-link">
@@ -90,12 +103,12 @@ class Kanban extends BaseController
 
             $currentStatus = $task['status'] ?? 'Backlog';
             if (!array_key_exists($currentStatus, $columns)) {
-                $currentStatus = 'Backlog'; 
+                $currentStatus = 'Backlog';
             }
 
             $columns[$currentStatus][] = [
                 'id'    => $task['taskID'],
-                'title' => $cardHTML, 
+                'title' => $cardHTML,
                 'class' => 'kanban-item-status-' . strtolower(str_replace(' ', '-', $currentStatus))
             ];
         }
@@ -103,8 +116,8 @@ class Kanban extends BaseController
         $data = [];
         foreach ($columns as $statusTitle => $items) {
             $data[] = [
-                'id'    => strtolower(str_replace(' ', '-', $statusTitle)), 
-                'title' => $statusTitle, 
+                'id'    => strtolower(str_replace(' ', '-', $statusTitle)),
+                'title' => $statusTitle,
                 'item'  => $items
             ];
         }
@@ -138,18 +151,10 @@ class Kanban extends BaseController
             'dateModified' => date('Y-m-d H:i:s')
         ]);
 
-        if ($updated) {
-            return $this->response->setJSON([
-                'status'  => 'success',
-                'message' => 'Task status updated successfully.'
-            ]);
-        } else {
-            log_message('error', 'Failed to update task status for ID ' . $taskID . ': ' . json_encode($this->tasksModel->errors()));
-            return $this->response->setJSON([
-                'status'  => 'error',
-                'message' => 'Failed to update task status in the database.'
-            ]);
-        }
+        return $this->response->setJSON([
+            'status'  => $updated ? 'success' : 'error',
+            'message' => $updated ? 'Task status updated successfully.' : 'Failed to update task status.'
+        ]);
     }
 
     public function getSprints($projectID)
