@@ -31,7 +31,7 @@
                     <div class="col-md-6">
                     </div>
                     <div class="col-md-6">
-                        <div class="form-group mb-0 me-0"></div><a class="btn btn-primary" href="<?= base_url('project/project/create') ?>"> <i data-feather="plus-square"> </i>Create New User</a>
+                        <div class="form-group mb-0 me-0"></div><a class="btn btn-primary" href="<?= base_url('admin/createUser') ?>"> <i data-feather="plus-square"> </i>Create New User</a>
                     </div>
                 </div>
             </div>
@@ -49,6 +49,7 @@
             <th>Username</th>
             <th>Email</th>
             <th>Role</th>
+            <th>Actions</th>
           </tr>
         </thead>
       </table>
@@ -69,14 +70,36 @@
       ajax: "<?= base_url('admin/usersAjax') ?>",
       columns: [
         { data: 'no' },
-        { data: 'username' }, // this is mapped to 'name'
+        { data: 'username' },
         { data: 'email' },
         { data: 'role',
-            render: function (data, type, row) {
+          render: function (data, type, row) {
             return data.charAt(0).toUpperCase() + data.slice(1);
           }
-         }
-        ]
+        },
+        {
+          data: null,
+          orderable: false,
+          searchable: false,
+          render: function (data, type, row) {
+            const editUrl = "<?= base_url('admin/editUser') ?>/" + data.id;
+            const deleteUrl = "<?= base_url('admin/deleteUser') ?>/" + data.id;
+            return `
+              <a href="${editUrl}" class="btn btn-sm btn-warning me-1" title="Edit">
+                <i data-feather="edit"></i>
+              </a>
+              <a href="${deleteUrl}" class="btn btn-sm btn-danger" title="Delete" onclick="return confirm('Are you sure you want to delete this user?')">
+                <i data-feather="trash-2"></i>
+              </a>
+            `;
+          }
+        }
+      ],
+      drawCallback: function(settings) {
+        if (window.feather) {
+          feather.replace();
+        }
+      }
     });
   });
 </script>
