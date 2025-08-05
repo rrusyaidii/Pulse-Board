@@ -5,11 +5,11 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Cuba admin is super flexible, powerful, clean &amp; modern responsive bootstrap 5 admin template with unlimited possibilities.">
-    <meta name="keywords" content="admin template, Cuba admin template, dashboard template, flat admin template, responsive admin template, web app">
-    <meta name="author" content="pixelstrap">
-    <link rel="icon" href="<?= base_url() ?>/assets/images/favicon.png" type="image/x-icon">
-    <link rel="shortcut icon" href="<?= base_url() ?>/assets/images/favicon.png" type="image/x-icon">
+    <meta name="description" content="">
+    <meta name="keywords" content="">
+    <meta name="author" content="">
+    <link rel="icon" href="<?= base_url() ?>/assets/images/logo/logodebug.png" type="image/x-icon">
+    <link rel="shortcut icon" href="<?= base_url() ?>/assets/images/logo/logodebug.png" type="image/x-icon">
     <link rel="stylesheet" type="text/css" href="<?=base_url()?>/assets/css/vendors/themify.css"></link>
     <link rel="stylesheet" type="text/css" href="<?=base_url()?>/assets/css/vendors/icofont.css"></link>
     <link rel="stylesheet" type="text/css" href="<?=base_url()?>/assets/css/font-awesome.css" ></link>
