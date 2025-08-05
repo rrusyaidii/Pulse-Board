@@ -13,7 +13,6 @@ class Sprints extends BaseController
     protected $sprintModel;
     protected $projectsModel;
     protected $tasksModel;
-
     protected $userModel;
 
     public function __construct()
@@ -34,7 +33,7 @@ class Sprints extends BaseController
         ]);
     }
 
-    // Show Create Sprint Form
+    // Create Sprint Page
     public function create()
     {
         return view('board/sprint_create', [
@@ -44,6 +43,7 @@ class Sprints extends BaseController
         ]);
     }
 
+    // Store Sprint
     public function store()
     {
         $validation = \Config\Services::validation();
@@ -76,6 +76,7 @@ class Sprints extends BaseController
         ]);
     }
 
+    // Get all sprints for a project
     public function getSprints($projectID)
     {
         $sprints = $this->sprintModel
@@ -89,46 +90,44 @@ class Sprints extends BaseController
         ]);
     }
 
-    // AJAX: Get Backlog + Current Sprint Tasks
+    // Get backlog + current sprint tasks
     public function getTasks($projectID, $sprintID = null)
     {
-        // Backlog tasks (no sprint)
+        // Backlog
         $backlog = $this->tasksModel
             ->where('projectID', $projectID)
             ->where('sprintID', null)
             ->findAll();
-    
-        // Force backlog status to "Backlog"
+
         foreach ($backlog as &$task) {
             $task['status'] = 'Backlog';
-            $task['assigneeName'] = $task['assigneeID'] 
-                ? ($this->userModel->find($task['assigneeID'])['name'] ?? 'Unknown') 
+            $task['assigneeName'] = $task['assigneeID']
+                ? ($this->userModel->find($task['assigneeID'])['name'] ?? 'Unknown')
                 : 'Unassigned';
         }
-    
-        // Current sprint tasks (if sprint selected)
+
+        // Current Sprint Tasks
         $currentSprintTasks = [];
         if (!empty($sprintID)) {
             $currentSprintTasks = $this->tasksModel
                 ->where('sprintID', $sprintID)
                 ->findAll();
-    
+
             foreach ($currentSprintTasks as &$task) {
-                $task['assigneeName'] = $task['assigneeID'] 
-                    ? ($this->userModel->find($task['assigneeID'])['name'] ?? 'Unknown') 
+                $task['assigneeName'] = $task['assigneeID']
+                    ? ($this->userModel->find($task['assigneeID'])['name'] ?? 'Unknown')
                     : 'Unassigned';
             }
         }
-    
+
         return $this->response->setJSON([
             'status'             => 'success',
             'backlog'            => $backlog,
             'currentSprintTasks' => $currentSprintTasks
         ]);
     }
-    
 
-    // AJAX: Add Task to Sprint
+    // Add Task to Sprint
     public function addToSprint()
     {
         $taskID   = $this->request->getPost('taskID');
@@ -158,6 +157,26 @@ class Sprints extends BaseController
         return $this->response->setJSON([
             'status'  => $updated ? 'success' : 'error',
             'message' => $updated ? 'Task added to sprint successfully!' : 'Failed to add task to sprint'
+        ]);
+    }
+
+    // Task Details Page
+    public function viewTask($taskID)
+    {
+        $task = $this->tasksModel->where('taskID', $taskID)->first();
+
+        if (!$task) {
+            return redirect()->to(base_url('board/sprints'))->with('error', 'Task not found');
+        }
+
+        $task['assigneeName'] = $task['assigneeID']
+            ? ($this->userModel->find($task['assigneeID'])['name'] ?? 'Unknown')
+            : 'Unassigned';
+
+        return view('board/task_view', [
+            'title'       => 'Task Details',
+            'breadcrumbs' => 'Task Details',
+            'task'        => $task
         ]);
     }
 }

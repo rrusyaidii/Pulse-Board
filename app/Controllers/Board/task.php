@@ -23,7 +23,6 @@ class Task extends BaseController
         $this->usersModel    = new UserModel();
     }
 
-    /** Task Overview Page */
     public function index()
     {
         return view('board/task_overview', [
@@ -34,7 +33,6 @@ class Task extends BaseController
         ]);
     }
 
-    /** Show Create Task Page */
     public function create()
     {
         return view('board/task_create', [
@@ -45,7 +43,6 @@ class Task extends BaseController
         ]);
     }
 
-    /** Store Task (AJAX) */
     public function store()
     {
         $validation = \Config\Services::validation();
@@ -91,7 +88,6 @@ class Task extends BaseController
         ]);
     }
 
-    /** View Task Page */
     public function view($taskID)
     {
         $task = $this->tasksModel->find($taskID);
@@ -111,7 +107,6 @@ class Task extends BaseController
         ]);
     }
 
-    /** Show Edit Task Page */
     public function edit($taskID)
     {
         $task = $this->tasksModel->find($taskID);
@@ -128,7 +123,6 @@ class Task extends BaseController
         ]);
     }
 
-    /** Update Task (AJAX) */
     public function update($taskID)
     {
         $task = $this->tasksModel->find($taskID);
@@ -180,7 +174,6 @@ class Task extends BaseController
         ]);
     }
 
-    /** AJAX: Get Tasks for DataTable */
     public function getTasks()
     {
         $projectID = $this->request->getGet('projectID');
@@ -200,7 +193,7 @@ class Task extends BaseController
 
             $formatted[] = [
                 $task['taskID'],
-                '<a href="'.base_url('board/task/view/'.$task['taskID']).'">'.esc($task['name']).'</a>',
+                '<a href="'.base_url('board/task/view/'.$task['taskID']).'" target="_blank">'.esc($task['name']).'</a>',
                 $task['sprintID'] ? 'Sprint '.$task['sprintID'] : 'Backlog',
                 'Project '.$task['projectID'],
                 '<span class="badge bg-secondary">'.esc($task['status']).'</span>',

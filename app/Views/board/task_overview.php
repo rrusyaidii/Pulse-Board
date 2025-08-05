@@ -62,7 +62,6 @@
 
 </div>
 
-<!-- Create Task Modal -->
 <?= $this->endSection() ?>
 
 
@@ -70,7 +69,6 @@
 <script>
 $(document).ready(function () {
 
-    // Initialize DataTable with Sprint Overview style (search right)
     let taskTable = $('#taskTable').DataTable({
         ajax: {
             url: '<?= base_url('board/task/getTasks') ?>',
@@ -83,11 +81,8 @@ $(document).ready(function () {
         pageLength: 5,
         lengthChange: false,
         dom:
-            // Top row: search on the right
             '<"d-flex justify-content-end mb-2"f>' +
-            // Table
             't' +
-            // Bottom row: info + pagination in one line
             '<"d-flex justify-content-between align-items-center mt-2"i p>',
         columns: [
             { data: 0 },
@@ -106,7 +101,6 @@ $(document).ready(function () {
         }
     });
 
-    // Load sprints for both main and modal
     function loadSprints(projectID, sprintSelectID) {
         $(sprintSelectID).html('<option value="">Select Sprint</option>');
         if (projectID) {
@@ -122,23 +116,19 @@ $(document).ready(function () {
         }
     }
 
-    // Project filter -> load sprints & reload table
     $('#projectSelect').change(function () {
         loadSprints($(this).val(), '#sprintSelect');
         taskTable.ajax.reload();
     });
 
-    // Sprint filter -> reload table
     $('#sprintSelect').change(function () {
         taskTable.ajax.reload();
     });
 
-    // Modal Project select -> load sprints for modal
     $('#modalProjectSelect').change(function () {
         loadSprints($(this).val(), '#modalSprintSelect');
     });
 
-    // Create Task Form Submit
     $('#createTaskForm').submit(function (e) {
         e.preventDefault();
 
