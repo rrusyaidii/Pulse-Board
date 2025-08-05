@@ -25,20 +25,48 @@ class Task extends BaseController
 
     public function index()
     {
+        $db     = \Config\Database::connect();
+        $userID = session()->get('userID');
+        $role   = session()->get('role');
+
+        $builder = $db->table('projects')
+            ->select('projects.*')
+            ->join('userprojects', 'userprojects.projectID = projects.projectID', 'inner');
+
+        if ($role !== 'admin') {
+            $builder->where('userprojects.userID', $userID);
+        }
+
+        $projects = $builder->get()->getResultArray();
+
         return view('board/task_overview', [
             'title'       => 'Task Overview',
             'breadcrumbs' => 'Task Overview',
-            'projects'    => $this->projectsModel->findAll(),
+            'projects'    => $projects,
             'users'       => $this->usersModel->findAll(),
         ]);
     }
 
     public function create()
     {
+        $db     = \Config\Database::connect();
+        $userID = session()->get('userID');
+        $role   = session()->get('role');
+
+        $builder = $db->table('projects')
+            ->select('projects.*')
+            ->join('userprojects', 'userprojects.projectID = projects.projectID', 'inner');
+
+        if ($role !== 'admin') {
+            $builder->where('userprojects.userID', $userID);
+        }
+
+        $projects = $builder->get()->getResultArray();
+
         return view('board/task_create', [
             'title'       => 'Create Task',
             'breadcrumbs' => 'Create Task',
-            'projects'    => $this->projectsModel->findAll(),
+            'projects'    => $projects,
             'users'       => $this->usersModel->findAll(),
         ]);
     }
@@ -62,6 +90,8 @@ class Task extends BaseController
             ]);
         }
 
+        $userID = session()->get('userID');
+
         $data = [
             'name'        => $this->request->getPost('name'),
             'projectID'   => $this->request->getPost('projectID'),
@@ -71,6 +101,7 @@ class Task extends BaseController
             'type'        => $this->request->getPost('type'),
             'description' => $this->request->getPost('description'),
             'status'      => 'Backlog',
+            'createdBy'   => $userID, // ✅ Track creator
             'dateCreated' => date('Y-m-d H:i:s'),
             'dateModified'=> date('Y-m-d H:i:s'),
         ];
@@ -90,9 +121,16 @@ class Task extends BaseController
 
     public function view($taskID)
     {
+        $userID = session()->get('userID');
+        $role   = session()->get('role');
+
         $task = $this->tasksModel->find($taskID);
         if (!$task) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Task not found.');
+        }
+
+        if ($role !== 'admin' && $task['assigneeID'] != $userID && ($task['createdBy'] ?? null) != $userID) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('You do not have access to this task.');
         }
 
         $project  = $this->projectsModel->find($task['projectID']);
@@ -109,79 +147,56 @@ class Task extends BaseController
 
     public function edit($taskID)
     {
+        $userID = session()->get('userID');
+        $role   = session()->get('role');
+
         $task = $this->tasksModel->find($taskID);
         if (!$task) {
             throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('Task not found.');
         }
 
+        if ($role !== 'admin' && $task['assigneeID'] != $userID && ($task['createdBy'] ?? null) != $userID) {
+            throw \CodeIgniter\Exceptions\PageNotFoundException::forPageNotFound('You do not have access to this task.');
+        }
+
+        $db       = \Config\Database::connect();
+        $builder  = $db->table('projects')
+            ->select('projects.*')
+            ->join('userprojects', 'userprojects.projectID = projects.projectID', 'inner');
+
+        if ($role !== 'admin') {
+            $builder->where('userprojects.userID', $userID);
+        }
+
+        $projects = $builder->get()->getResultArray();
+
         return view('board/task_edit', [
             'title'       => 'Edit Task',
             'breadcrumbs' => 'Edit Task',
             'task'        => $task,
-            'projects'    => $this->projectsModel->findAll(),
+            'projects'    => $projects,
             'users'       => $this->usersModel->findAll(),
-        ]);
-    }
-
-    public function update($taskID)
-    {
-        $task = $this->tasksModel->find($taskID);
-        if (!$task) {
-            return $this->response->setJSON([
-                'status' => 'error',
-                'message' => 'Task not found.'
-            ]);
-        }
-
-        $validation = \Config\Services::validation();
-        $rules = [
-            'name'       => 'required|min_length[3]',
-            'projectID'  => 'required|numeric',
-            'sprintID'   => 'permit_empty|numeric',
-            'priority'   => 'required',
-            'type'       => 'required',
-            'description'=> 'permit_empty|string',
-        ];
-
-        if (!$this->validate($rules)) {
-            return $this->response->setJSON([
-                'status' => 'error',
-                'errors' => $validation->getErrors()
-            ]);
-        }
-
-        $data = [
-            'name'        => $this->request->getPost('name'),
-            'projectID'   => $this->request->getPost('projectID'),
-            'sprintID'    => $this->request->getPost('sprintID') ?: null,
-            'assigneeID'  => $this->request->getPost('assigneeID') ?: null,
-            'priority'    => $this->request->getPost('priority'),
-            'type'        => $this->request->getPost('type'),
-            'description' => $this->request->getPost('description'),
-            'dateModified'=> date('Y-m-d H:i:s'),
-        ];
-
-        if ($this->tasksModel->update($taskID, $data)) {
-            return $this->response->setJSON([
-                'status'  => 'success',
-                'message' => 'Task updated successfully!'
-            ]);
-        }
-
-        return $this->response->setJSON([
-            'status'  => 'error',
-            'message' => 'Failed to update task'
         ]);
     }
 
     public function getTasks()
     {
+        $userID    = session()->get('userID');
+        $role      = session()->get('role');
         $projectID = $this->request->getGet('projectID');
         $sprintID  = $this->request->getGet('sprintID');
 
-        $builder = $this->tasksModel;
-        if (!empty($projectID)) $builder = $builder->where('projectID', $projectID);
-        if (!empty($sprintID))  $builder = $builder->where('sprintID', $sprintID);
+        $builder = $this->tasksModel->select('*');
+
+        if (!empty($projectID)) $builder->where('projectID', $projectID);
+        if (!empty($sprintID))  $builder->where('sprintID', $sprintID);
+
+        if ($role !== 'admin') {
+            $builder->groupStart()
+                    ->where('assigneeID', $userID)
+                    ->orWhere('createdBy', $userID)
+                    ->groupEnd();
+        }
 
         $tasks = $builder->findAll();
         $formatted = [];

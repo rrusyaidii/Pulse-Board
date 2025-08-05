@@ -1,5 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
+<style>
+  .logo-wrapper .new-logo {
+    width: 150px;
+    height: 50px;
+    object-fit: contain;
+  }
+
+  .logo-wrapper {
+    text-align: center;
+  }
+</style>
 
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
@@ -45,6 +56,11 @@
             <div>
               <div class="login-main"> 
 
+                <div class="logo-wrapper text-center mb-4">
+    <a href="<?= base_url("/") ?>">
+      <img class="img-fluid new-logo" src="<?= base_url() ?>/assets/images/logo/logodebug.png" alt="Logo">
+    </a>
+  </div>
                 <!-- <form  class="theme-form"> -->
                 <form method="post" action="<?= base_url('/auth/attemptLogin') ?>" class="theme-form">
                   <h4>Sign in to account</h4>

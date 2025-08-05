@@ -23,27 +23,52 @@ class Sprints extends BaseController
         $this->userModel     = new UserModel();
     }
 
-    // Sprint Planning Page
     public function index()
     {
+        $db     = \Config\Database::connect();
+        $userID = session()->get('userID');
+        $role   = session()->get('role');
+
+        $builder = $db->table('projects')
+            ->select('projects.*')
+            ->join('userprojects', 'userprojects.projectID = projects.projectID', 'inner');
+
+        if ($role !== 'admin') {
+            $builder->where('userprojects.userID', $userID);
+        }
+
+        $projects = $builder->get()->getResultArray();
+
         return view('board/sprint_overview', [
             'title'       => 'Sprint Planning',
             'breadcrumbs' => 'Sprint Planning',
-            'projects'    => $this->projectsModel->findAll()
+            'projects'    => $projects
         ]);
     }
 
-    // Create Sprint Page
     public function create()
     {
+        $db     = \Config\Database::connect();
+        $userID = session()->get('userID');
+        $role   = session()->get('role');
+
+        $builder = $db->table('projects')
+            ->select('projects.*')
+            ->join('userprojects', 'userprojects.projectID = projects.projectID', 'inner');
+
+        if ($role !== 'admin') {
+            $builder->where('userprojects.userID', $userID);
+        }
+
+        $projects = $builder->get()->getResultArray();
+
         return view('board/sprint_create', [
             'title'       => 'Create Sprint',
             'breadcrumbs' => 'Create Sprint',
-            'projects'    => $this->projectsModel->findAll()
+            'projects'    => $projects
         ]);
     }
 
-    // Store Sprint
     public function store()
     {
         $validation = \Config\Services::validation();
@@ -76,9 +101,26 @@ class Sprints extends BaseController
         ]);
     }
 
-    // Get all sprints for a project
     public function getSprints($projectID)
     {
+        $userID = session()->get('userID');
+        $role   = session()->get('role');
+
+        if ($role !== 'admin') {
+            $db = \Config\Database::connect();
+            $check = $db->table('userprojects')
+                ->where('projectID', $projectID)
+                ->where('userID', $userID)
+                ->countAllResults();
+
+            if ($check === 0) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'Access denied'
+                ]);
+            }
+        }
+
         $sprints = $this->sprintModel
             ->where('projectID', $projectID)
             ->orderBy('startDate', 'ASC')
@@ -90,14 +132,34 @@ class Sprints extends BaseController
         ]);
     }
 
-    // Get backlog + current sprint tasks
     public function getTasks($projectID, $sprintID = null)
     {
-        // Backlog
-        $backlog = $this->tasksModel
-            ->where('projectID', $projectID)
-            ->where('sprintID', null)
-            ->findAll();
+        $userID = session()->get('userID');
+        $role   = session()->get('role');
+
+        if ($role !== 'admin') {
+            $db = \Config\Database::connect();
+            $check = $db->table('userprojects')
+                ->where('projectID', $projectID)
+                ->where('userID', $userID)
+                ->countAllResults();
+
+            if ($check === 0) {
+                return $this->response->setJSON([
+                    'status' => 'error',
+                    'message' => 'Access denied'
+                ]);
+            }
+        }
+
+        $builder = $this->tasksModel->where('projectID', $projectID)->where('sprintID', null);
+        if ($role !== 'admin') {
+            $builder->groupStart()
+                ->where('assigneeID', $userID)
+                ->orWhere('createdBy', $userID)
+                ->groupEnd();
+        }
+        $backlog = $builder->findAll();
 
         foreach ($backlog as &$task) {
             $task['status'] = 'Backlog';
@@ -106,12 +168,16 @@ class Sprints extends BaseController
                 : 'Unassigned';
         }
 
-        // Current Sprint Tasks
         $currentSprintTasks = [];
         if (!empty($sprintID)) {
-            $currentSprintTasks = $this->tasksModel
-                ->where('sprintID', $sprintID)
-                ->findAll();
+            $builder = $this->tasksModel->where('sprintID', $sprintID);
+            if ($role !== 'admin') {
+                $builder->groupStart()
+                    ->where('assigneeID', $userID)
+                    ->orWhere('createdBy', $userID)
+                    ->groupEnd();
+            }
+            $currentSprintTasks = $builder->findAll();
 
             foreach ($currentSprintTasks as &$task) {
                 $task['assigneeName'] = $task['assigneeID']
@@ -127,7 +193,6 @@ class Sprints extends BaseController
         ]);
     }
 
-    // Add Task to Sprint
     public function addToSprint()
     {
         $taskID   = $this->request->getPost('taskID');
@@ -160,13 +225,18 @@ class Sprints extends BaseController
         ]);
     }
 
-    // Task Details Page
     public function viewTask($taskID)
     {
-        $task = $this->tasksModel->where('taskID', $taskID)->first();
+        $userID = session()->get('userID');
+        $role   = session()->get('role');
 
+        $task = $this->tasksModel->where('taskID', $taskID)->first();
         if (!$task) {
             return redirect()->to(base_url('board/sprints'))->with('error', 'Task not found');
+        }
+
+        if ($role !== 'admin' && $task['assigneeID'] != $userID && ($task['createdBy'] ?? null) != $userID) {
+            return redirect()->to(base_url('board/sprints'))->with('error', 'Access denied');
         }
 
         $task['assigneeName'] = $task['assigneeID']

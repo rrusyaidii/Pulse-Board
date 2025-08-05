@@ -105,7 +105,20 @@
                             <option value="active" <?= $project['status'] == 'active' ? 'selected' : '' ?>>Active</option>
                             <option value="completed" <?= $project['status'] == 'completed' ? 'selected' : '' ?>>Completed</option>
                             <option value="cancelled" <?= $project['status'] == 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                            <option value="archived" <?= $project['status'] == 'archived' ? 'selected' : '' ?>>Archived</option>
                         </select>
+                      </div>
+
+                      <div class="col-md-6">
+                          <label for="contractValue">Contract Value (RM)</label>
+                          <input class="form-control" id="contractValue" name="contractValue" type="number" step="0.01"
+                              value="<?= esc($project['contractValue'] ?? '') ?>">
+                      </div>
+
+                      <div class="col-md-6">
+                          <label for="cost">Cost (RM)</label>
+                          <input class="form-control" id="cost" name="cost" type="number" step="0.01"
+                              value="<?= esc($project['cost'] ?? '') ?>">
                       </div>
 
                       <div class="col-xs-12">
@@ -118,34 +131,58 @@
 
                     <!-- User Assignments Section -->
                     <div class="row g-3 mb-3" id="user-assignments-wrapper">
-                    <label class="form-label">Assign Users</label>
+                        <label class="form-label">Assign Users</label>
 
-                    <?php foreach ($assignedUsers as $assigned): ?>
-                    <div class="user-assignment row mb-2">
-                    <div class="col-md-6">
-                        <select name="userID[]" class="form-select" required>
-                        <option value="" disabled>Choose User...</option>
-                        <?php foreach ($users as $user): ?>
-                            <option value="<?= $user['userID'] ?>" <?= $user['userID'] == $assigned['userID'] ? 'selected' : '' ?>>
-                            <?= $user['name'] ?>
-                            </option>
-                        <?php endforeach; ?>
-                        </select>
-                    </div>
-                    <div class="col-md-4">
-                        <select name="roles[]" class="form-select" required>
-                        <option value="" disabled>Choose Role...</option>
-                        <option value="manager" <?= $assigned['role'] == 'manager' ? 'selected' : '' ?>>Manager</option>
-                        <option value="developer" <?= $assigned['role'] == 'developer' ? 'selected' : '' ?>>Developer</option>
-                        <option value="qa" <?= $assigned['role'] == 'qa' ? 'selected' : '' ?>>QA</option>
-                        </select>
-                    </div>
-                    <div class="col-md-2">
-                        <button type="button" class="btn btn-danger btn-remove-user">Remove</button>
-                    </div>
-                    </div>
-                    <?php endforeach; ?>
-
+                        <?php if (!empty($assignedUsers)): ?>
+                            <?php foreach ($assignedUsers as $assigned): ?>
+                                <div class="user-assignment row mb-2">
+                                    <div class="col-md-6">
+                                        <select name="userID[]" class="form-select" required>
+                                            <option value="" disabled>Choose User...</option>
+                                            <?php foreach ($users as $user): ?>
+                                                <option value="<?= $user['userID'] ?>" <?= $user['userID'] == $assigned['userID'] ? 'selected' : '' ?>>
+                                                    <?= esc($user['name']) ?>
+                                                </option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-4">
+                                        <select name="roles[]" class="form-select" required>
+                                            <option value="" disabled>Choose Role...</option>
+                                            <option value="manager" <?= $assigned['role'] == 'manager' ? 'selected' : '' ?>>Manager</option>
+                                            <option value="developer" <?= $assigned['role'] == 'developer' ? 'selected' : '' ?>>Developer</option>
+                                            <option value="qa" <?= $assigned['role'] == 'qa' ? 'selected' : '' ?>>QA</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" class="btn btn-danger btn-remove-user">Remove</button>
+                                    </div>
+                                </div>
+                            <?php endforeach; ?>
+                        <?php else: ?>
+                            <!-- Show one empty assignment row if no users are assigned yet -->
+                            <div class="user-assignment row mb-2">
+                                <div class="col-md-6">
+                                    <select name="userID[]" class="form-select" required>
+                                        <option value="" disabled selected>Choose User...</option>
+                                        <?php foreach ($users as $user): ?>
+                                            <option value="<?= $user['userID'] ?>"><?= esc($user['name']) ?></option>
+                                        <?php endforeach; ?>
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <select name="roles[]" class="form-select" required>
+                                        <option value="" disabled selected>Choose Role...</option>
+                                        <option value="manager">Manager</option>
+                                        <option value="developer">Developer</option>
+                                        <option value="qa">QA</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <button type="button" class="btn btn-danger btn-remove-user">Remove</button>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
                     <div class="mb-5">

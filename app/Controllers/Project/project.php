@@ -8,27 +8,57 @@ use App\Models\OrganizationModel;
 use App\Models\DepartmentModel;
 use App\Models\ClientsModel;
 use App\Models\UserProjectsModel;
+use App\Models\TasksModel;
 
 class Project extends BaseController
 {
     public function index()
-{
-    $model = new ProjectsModel();
-    $userID = session()->get('userID');
-    $role = session()->get('role');
+    {
+        $model = new ProjectsModel();
+        $userID = session()->get('userID');
+        $role = session()->get('role');
+        $taskStats = $this->getTaskStatsByProject();
 
-    // ✅ Pass both userID and role
-    $projects = $model->getProjectsWithJoins($userID, $role);
+        $projects = $model->getProjectsWithJoins($userID, $role);
 
-    $data = [
-        'title' => 'Project Overview',
-        'breadcrumbs' => 'My Project',
-        'projects' => $projects,
-    ];
+        $data = [
+            'title' => 'Project Overview',
+            'breadcrumbs' => 'My Project',
+            'projects' => $projects,
+            'taskStats'   => $taskStats,
 
-    return view('project/project_overview', $data);
-}
+        ];
 
+        return view('project/project_overview', $data);
+    }
+
+    public function archive()
+    {
+        $db     = \Config\Database::connect();
+        $userID = session()->get('userID');
+        $role   = session()->get('role');
+
+        $builder = $db->table('projects')
+            ->select('projects.*, clients.name AS clientName, department.name AS deptName')
+            ->join('clients', 'clients.clientID = projects.clientID', 'left')
+            ->join('department', 'department.deptID = projects.deptID', 'left')
+            ->join('userprojects', 'userprojects.projectID = projects.projectID', 'left')
+            ->where('projects.status', 'archived');
+
+        if ($role !== 'admin') {
+            $builder->where('userprojects.userID', $userID);
+        }
+
+        $projects = $builder->get()->getResultArray();
+
+        $data = [
+            'title'       => 'Archived Projects',
+            'breadcrumbs' => 'Archived Projects',
+            'projects'    => $projects,
+        ];
+
+        return view('project/archived', $data);
+    }
 
 
     public function create()
@@ -68,6 +98,8 @@ class Project extends BaseController
             'endDate'      => $this->request->getPost('endDate'),
             'status'       => $this->request->getPost('status'),
             'description'  => $this->request->getPost('description'),
+            'contractValue' => $this->request->getPost('contractValue'),
+            'cost' => $this->request->getPost('cost'),
             'dateCreated'  => $now,
             'dateModified' => $now,
         ];
@@ -142,6 +174,8 @@ class Project extends BaseController
             'endDate'      => $this->request->getPost('endDate'),
             'status'       => $this->request->getPost('status'),
             'description'  => $this->request->getPost('description'),
+            'contractValue' => $this->request->getPost('contractValue'),
+            'cost' => $this->request->getPost('cost'),
             'dateModified' => $now,
         ];
 
@@ -169,6 +203,58 @@ class Project extends BaseController
 
     }
 
+        public function view($projectID)
+    {
+        $data = [
+            'title' => 'View Project',
+            'breadcrumbs' => 'View Project',
+        ];
+
+        $organizationModel = new OrganizationModel();
+        $departmentModel = new DepartmentModel();
+        $clientsModel = new ClientsModel();
+        $userModel = new \App\Models\UserModel();
+        $projectModel = new \App\Models\ProjectsModel();
+        $userProjectModel = new \App\Models\UserProjectsModel();
+
+        $project = $projectModel->find($projectID);
+        if (!$project) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException("Project not found");
+        }
+        $data['project'] = $project;
+        $data['users'] = $userModel->findAll();
+
+
+        $data['organizations'] = $organizationModel->findAll();
+        $data['departments'] = $departmentModel->findAll();
+        $data['clients'] = $clientsModel->findAll();
+        $data['assignedUsers'] = $userProjectModel
+        ->where('projectID', $projectID)
+        ->findAll();
+
+
+        return view('project/view', $data);
+    }
+
+    public function getTaskStatsByProject()
+    {
+        $tasksModel = new TasksModel(); 
+
+        $taskStats = $tasksModel
+            ->select("projectID,
+                    COUNT(*) as total_tasks,
+                    SUM(CASE WHEN status IN ('To Do', 'In Progress', 'In Review') THEN 1 ELSE 0 END) as in_progress,
+                    SUM(CASE WHEN status = 'Completed' THEN 1 ELSE 0 END) as total_completed")
+            ->groupBy('projectID')
+            ->findAll();
+
+        $statsMap = [];
+        foreach ($taskStats as $stat) {
+            $statsMap[$stat['projectID']] = $stat;
+        }
+
+        return $statsMap;
+    }
 
 
 }

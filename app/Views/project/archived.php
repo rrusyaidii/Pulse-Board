@@ -25,7 +25,7 @@
   <div class="container-fluid">
     <!-- Start of project-cards -->
     <div class="row project-cards">
-        <?php if (session()->get('role') === 'admin' || session()->get('role') === 'manager'): ?>
+        <?php if (session()->get('role') === 'admin'): ?>
         <div class="col-md-12 project-list">
             <div class="card">
                 <div class="row">
@@ -45,6 +45,8 @@
         <div class="card">
         <div class="card-body">
         <div class="row">
+           
+            
 
             <?php foreach ($projects as $project): ?>
                 <div class="col-xl-4 col-md-6 mb-4">
@@ -72,70 +74,30 @@
                             <p class="mb-0"><?= esc($project['clientName']) ?></p>
                         </div>
 
-
-                       <?php
-                        $stats = $taskStats[$project['projectID']] ?? [
-                            'total_tasks' => 0,
-                            'in_progress' => 0,
-                            'total_completed' => 0,
-                            'contractValue' => 0,
-                        ];
-
-                        $stats['contractValue'] = $project['contractValue'] ?? 0;
-                        $stats['cost'] = $project['cost'] ?? 0;
-
-                        $percentage = $stats['total_tasks'] > 0
-                            ? round(($stats['total_completed'] / $stats['total_tasks']) * 100)
-                            : 0;
-
-                        // Profit adjusted based on percentage
-                        $rawProfit = $stats['contractValue'] - $stats['cost'];
-                        $adjustedProfit = round($rawProfit * ($percentage / 100));
-
-                        // Progress bar color
-                        $progressClass = 'bg-danger'; // red
-                        if ($percentage > 30 && $percentage < 70) {
-                            $progressClass = 'bg-warning'; // yellow
-                        } elseif ($percentage >= 70) {
-                            $progressClass = 'bg-success'; // green
-                        }
-                        ?>
+                        <p><?= esc($project['description'] ?? 'No description provided.') ?></p>
 
                         <div class="row details mb-2">
                             <div class="col-6"><span>Total Task</span></div>
-                            <div class="col-6 text-primary"><?= $stats['total_tasks'] ?></div>
-
-                            <div class="col-6"><span>In Progress</span></div>
-                            <div class="col-6 text-primary"><?= $stats['in_progress'] ?></div>
-
-                            <div class="col-6"><span>Total Completed</span></div>
-                            <div class="col-6 text-primary"><?= $stats['total_completed'] ?></div>
-
-                            <div class="col-6"><span>Contract Value</span></div>
-                            <div class="col-6 text-primary">RM <?= number_format($stats['contractValue'], 0) ?></div>
-
-                            <div class="col-6"><span>Current Profit</span></div>
-                            <div class="col-6 text-primary">RM <?= number_format($adjustedProfit, 0) ?></div>
+                            <div class="col-6 text-primary">0</div>
+                            <div class="col-6"><span>Total Open Task</span></div>
+                            <div class="col-6 text-primary">0</div>
+                            <div class="col-6"><span>Total Resolved</span></div>
+                            <div class="col-6 text-primary">0</div>
                         </div>
 
                         <div class="project-status mt-2 mb-4">
                             <div class="media mb-1">
-                                <p class="mb-0"><?= $percentage ?>%</p>
-                                <div class="media-body text-end"><span><?= esc(ucwords($project['status'])) ?></span></div>
+                                <p class="mb-0">0%</p>
+                                <div class="media-body text-end"><span><?= esc($project['status']) ?></span></div>
                             </div>
                             <div class="progress" style="height: 5px;">
-                                <div class="progress-bar <?= $progressClass ?> progress-bar-striped progress-bar-animated" style="width: <?= $percentage ?>%;"></div>
+                                <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" style="width: 0%;"></div>
                             </div>
                         </div>
 
 
-
-                    <?php if (session()->get('role') === 'admin' || session()->get('role') === 'manager'): ?>
+                    <?php if (session()->get('role') === 'admin'): ?>
                         <a class="btn btn-primary" href="<?= base_url('project/project/edit/'.$project['projectID'] ) ?>">Edit</a>
-                    <?php endif; ?>
-
-                    <?php if (session()->get('role') === 'user'): ?>
-                        <a class="btn btn-primary" href="<?= base_url('project/project/view/'.$project['projectID'] ) ?>">View</a>
                     <?php endif; ?>
 
                     </div>
