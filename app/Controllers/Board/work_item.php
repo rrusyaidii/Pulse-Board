@@ -30,7 +30,7 @@ class Work_Item extends BaseController
             'title'       => 'Work Items',
             'breadcrumbs' => 'Work Items',
             'projects'    => $this->projectsModel->findAll(),
-            'users'       => $this->userModel->findAll() // ✅ send user list for dropdown
+            'users'       => $this->userModel->findAll() 
         ]);
     }
 
@@ -48,7 +48,6 @@ class Work_Item extends BaseController
         ]);
     }
 
-    /** AJAX: Get Work Items for DataTable */
     public function getTasks()
     {
         $projectID = $this->request->getGet('projectID');
@@ -69,7 +68,7 @@ class Work_Item extends BaseController
             }
 
             $sprintName = !empty($task['sprintID']) ? 'Sprint '.$task['sprintID'] : 'Backlog';
-            $taskLink = '<a href="'.base_url('board/task/view/'.$task['taskID']).'">'.esc($task['name']).'</a>';
+            $taskLink = '<a href="'.base_url('board/task/view/'.$task['taskID']).'" target="_blank">'.esc($task['name']).'</a>';
 
             $data[] = [
                 $task['taskID'],
@@ -79,14 +78,12 @@ class Work_Item extends BaseController
                 $task['priority'] ?? 'Low',
                 $assigneeName,
                 $task['assigneeID'] ?? '',
-                $task['endDate'] ?? '-'
             ];
         }
 
         return $this->response->setJSON(['data' => $data]);
     }
 
-    /** AJAX: Update Status */
     public function updateStatus()
     {
         $taskID = $this->request->getPost('taskID');
@@ -105,7 +102,6 @@ class Work_Item extends BaseController
         return $this->response->setJSON(['status' => 'error', 'message' => 'Invalid request']);
     }
 
-    /** AJAX: Update Priority */
     public function updatePriority()
     {
         $taskID   = $this->request->getPost('taskID');
@@ -124,7 +120,6 @@ class Work_Item extends BaseController
         return $this->response->setJSON(['status' => 'error', 'message' => 'Invalid request']);
     }
 
-    /** AJAX: Update Assignee */
     public function updateAssignee()
     {
         $taskID    = $this->request->getPost('taskID');

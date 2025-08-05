@@ -121,7 +121,6 @@
 <?= $this->section('script') ?>
 <script>
 $(document).ready(function () {
-    // Init Summernote
     $('#taskDescription').summernote({
         placeholder: 'Write detailed task description here...',
         height: 200,
@@ -138,7 +137,6 @@ $(document).ready(function () {
         styleTags: ['p', 'blockquote', 'pre', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6']
     });
 
-    // Submit form
     $('#sprintForm').on('submit', function (e) {
         e.preventDefault();
         
@@ -150,8 +148,8 @@ $(document).ready(function () {
             type: "POST",
             data: formData,
             dataType: "json",
-            processData: false, // Prevents jQuery from trying to process the FormData object
-            contentType: false, // Prevents jQuery from setting a content type header
+            processData: false, 
+            contentType: false, 
             success: function (response) {
                 if (response.status === 'success') {
                     Swal.fire({

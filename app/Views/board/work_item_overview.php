@@ -11,7 +11,6 @@
     </div>
   </div>
 
-  <!-- Filters -->
   <div class="card mb-4 shadow-sm border-0">
     <div class="card-body">
       <div class="row align-items-center">
@@ -34,7 +33,6 @@
     </div>
   </div>
 
-  <!-- Work Items Table -->
   <div class="card shadow-sm border-0">
     <div class="card-body table-responsive">
       <table class="table table-hover align-middle table-striped table-sm" id="workItemTable" style="width:100%">
@@ -46,7 +44,6 @@
             <th>Status</th>
             <th>Priority</th>
             <th>Assignee</th>
-            <th>Due Date</th>
           </tr>
         </thead>
       </table>
@@ -76,7 +73,7 @@ $(document).ready(function () {
 
     const statuses = ['Backlog','To Do','In Progress','In Review','Completed','Done'];
     const priorities = ['Low','Normal','Medium','High','Blocker'];
-    const users = <?= json_encode($users) ?>; // ✅ Server-side user list
+    const users = <?= json_encode($users) ?>; 
 
     // DataTable
     let table = $('#workItemTable').DataTable({
@@ -92,9 +89,16 @@ $(document).ready(function () {
         lengthChange: false,
         dom: '<"d-flex justify-content-end mb-2"f>t<"d-flex justify-content-between mt-2"ip>',
         columns: [
-            { data: 0 },
-            { data: 1 },
-            { data: 2 },
+            { data: 0 }, 
+            { 
+                data: 1, 
+                render: function(data, type, row) {
+                    return `<a href="<?= base_url('board/task/view/') ?>${row[0]}" 
+                                class="fw-semibold text-primary" 
+                                target="_blank">${data} <i class="fa fa-external-link-alt small"></i></a>`;
+                }
+            },
+            { data: 2 }, 
             { 
                 data: 3,
                 render: function(data, type, row) {
@@ -106,7 +110,7 @@ $(document).ready(function () {
                 }
             },
             { 
-                data: 4,
+                data: 4, 
                 render: function(data, type, row) {
                     const taskID = row[0];
                     let html = `<select class="form-select form-select-sm priority-select" data-id="${taskID}">`;
@@ -128,8 +132,7 @@ $(document).ready(function () {
                     html += `</select>`;
                     return html;
                 }
-            },
-            { data: 7 }
+            }
         ]
     });
 
@@ -142,7 +145,6 @@ $(document).ready(function () {
         table.ajax.reload();
     });
 
-    // Update Status
     $('#workItemTable').on('change', '.status-select', function() {
         $.post('<?= base_url('board/work_item/updateStatus') ?>', {
             taskID: $(this).data('id'), status: $(this).val()
@@ -151,7 +153,6 @@ $(document).ready(function () {
         }, 'json');
     });
 
-    // Update Priority
     $('#workItemTable').on('change', '.priority-select', function() {
         $.post('<?= base_url('board/work_item/updatePriority') ?>', {
             taskID: $(this).data('id'), priority: $(this).val()
@@ -160,7 +161,6 @@ $(document).ready(function () {
         }, 'json');
     });
 
-    // Update Assignee
     $('#workItemTable').on('change', '.assignee-select', function() {
         $.post('<?= base_url('board/work_item/updateAssignee') ?>', {
             taskID: $(this).data('id'), assigneeID: $(this).val()

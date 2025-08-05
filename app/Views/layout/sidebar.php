@@ -75,7 +75,7 @@
               <li><a href="<?= base_url("board/kanban") ?>">Board</a></li>
               <li><a href="<?= base_url("board/task") ?>">Task Overview</a></li>
               <li><a href="<?= base_url("board/sprints") ?>">Sprint Planning</a></li>
-              <li><a href="<?= base_url("board/backlog") ?>">Backlog</a></li>
+              <!-- <li><a href="<?= base_url("board/backlog") ?>">Backlog</a></li> -->
             </ul>
           </li>
           <!-- End Board Menu -->

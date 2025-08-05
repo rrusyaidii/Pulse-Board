@@ -13,17 +13,16 @@ class Kanban extends BaseController
     protected $projectsModel;
     protected $sprintModel;
     protected $tasksModel;
-    protected $usersModel; // Declare the UserModel property
+    protected $usersModel; 
 
     public function __construct()
     {
         $this->projectsModel = new ProjectsModel();
         $this->sprintModel   = new SprintModel();
         $this->tasksModel    = new TasksModel();
-        $this->usersModel    = new UserModel(); // Initialize the UserModel
+        $this->usersModel    = new UserModel(); 
     }
 
-    /** Show Kanban Board Page */
     public function index()
     {
         $data = [
@@ -34,18 +33,16 @@ class Kanban extends BaseController
         return view('board/kanban', $data);
     }
 
-    /** AJAX: Load Kanban Tasks by Project & Optional Sprint */
     public function kanbanData($projectID, $sprintID = null)
     {
         $tasksQuery = $this->tasksModel->where('projectID', $projectID);
 
-        if (!empty($sprintID) && $sprintID !== 'all') { // Added 'all' check for filter option
+        if (!empty($sprintID) && $sprintID !== 'all') { 
             $tasksQuery->where('sprintID', $sprintID);
         }
 
         $tasks = $tasksQuery->findAll();
 
-        // Define columns and their display titles
         $columns = [
             'Backlog'     => [],
             'To Do'       => [],
@@ -55,11 +52,9 @@ class Kanban extends BaseController
         ];
 
         foreach ($tasks as $task) {
-            // Fetch related data for display
             $project = $this->projectsModel->find($task['projectID']);
             $assignee = $task['assigneeID'] ? $this->usersModel->find($task['assigneeID']) : null;
 
-            // Determine priority class for styling
             $priorityClass = '';
             switch (strtolower($task['priority'])) {
                 case 'high':
@@ -77,10 +72,8 @@ class Kanban extends BaseController
                     break;
             }
 
-            // Determine type class for styling (optional, but good for consistency)
-            $typeClass = 'badge-primary'; // Default type badge color
+            $typeClass = 'badge-primary'; 
 
-            // Construct custom HTML for the Kanban card
             $cardHTML = '
                 <a href="' . base_url('board/task/view/' . $task['taskID']) . '" class="kanban-item-link">
                     <span class="kanban-item-title">' . esc($task['name']) . '</span>
@@ -95,26 +88,23 @@ class Kanban extends BaseController
                 </div>
             ';
 
-            // Map task status to a column. If status is null or not in defined columns, default to 'Backlog'
             $currentStatus = $task['status'] ?? 'Backlog';
             if (!array_key_exists($currentStatus, $columns)) {
-                $currentStatus = 'Backlog'; // Fallback for undefined statuses
+                $currentStatus = 'Backlog'; 
             }
 
             $columns[$currentStatus][] = [
                 'id'    => $task['taskID'],
-                'title' => $cardHTML, // Use the rich HTML content
-                // Add a class to the item for additional styling if needed, e.g., based on priority
+                'title' => $cardHTML, 
                 'class' => 'kanban-item-status-' . strtolower(str_replace(' ', '-', $currentStatus))
             ];
         }
 
-        // Format the data into jKanban's board structure
         $data = [];
         foreach ($columns as $statusTitle => $items) {
             $data[] = [
-                'id'    => strtolower(str_replace(' ', '-', $statusTitle)), // jKanban board ID (e.g., "to-do")
-                'title' => $statusTitle, // Display title (e.g., "To Do")
+                'id'    => strtolower(str_replace(' ', '-', $statusTitle)), 
+                'title' => $statusTitle, 
                 'item'  => $items
             ];
         }
@@ -122,13 +112,11 @@ class Kanban extends BaseController
         return $this->response->setJSON($data);
     }
 
-    /** AJAX: Update Task Status from Drag & Drop */
     public function updateStatus()
     {
         $taskID = $this->request->getPost('taskID');
         $status = $this->request->getPost('status');
 
-        // Convert jKanban's board ID back to the correct status name for the database
         $statusMap = [
             'backlog'     => 'Backlog',
             'to-do'       => 'To Do',
@@ -156,7 +144,6 @@ class Kanban extends BaseController
                 'message' => 'Task status updated successfully.'
             ]);
         } else {
-            // Log any database errors for debugging
             log_message('error', 'Failed to update task status for ID ' . $taskID . ': ' . json_encode($this->tasksModel->errors()));
             return $this->response->setJSON([
                 'status'  => 'error',
@@ -165,7 +152,6 @@ class Kanban extends BaseController
         }
     }
 
-    /** AJAX: Get Sprints for Project */
     public function getSprints($projectID)
     {
         $sprints = $this->sprintModel

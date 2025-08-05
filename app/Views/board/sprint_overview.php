@@ -18,7 +18,7 @@
     </div>
   </div>
 
-  <!-- Card 1: Project & Sprint Selector -->
+  <!-- Project & Sprint Selector -->
   <div class="card mb-4 shadow-sm border-0">
     <div class="card-body">
       <div class="row align-items-center">
@@ -57,7 +57,7 @@
     <div class="card-body p-3">
       <div class="table-responsive">
         <table class="table table-hover align-middle table-striped table-sm" id="backlogTable" style="width:100%">
-          <thead class="table table-striped">
+          <thead class="table-light">
             <tr>
               <th>#</th>
               <th>Title</th>
@@ -84,7 +84,7 @@
     <div class="card-body p-3">
       <div class="table-responsive">
         <table class="table table-hover align-middle table-striped table-sm" id="currentSprintTable" style="width:100%">
-          <thead class="table table-striped">
+          <thead class="table-light">
             <tr>
               <th>#</th>
               <th>Title</th>
@@ -133,7 +133,6 @@ $(document).ready(function () {
         $('#currentTasksCount').text('0 Tasks');
 
         if (projectID) {
-            // Load sprints dropdown
             $.get('<?= base_url('board/sprints/getSprints') ?>/' + projectID, function (res) {
                 if (res.status === 'success') {
                     res.sprints.forEach(sprint => {
@@ -144,12 +143,11 @@ $(document).ready(function () {
                 }
             }, 'json');
 
-            // Load all backlog tasks initially (no sprint selected)
             loadTasks(projectID, '');
         }
     });
 
-    // Sprint selection changes table
+    // Load tasks when sprint changes
     $('#sprintSelect').change(function () {
         let projectID = $('#projectSelect').val();
         let sprintID = $(this).val();
@@ -167,7 +165,7 @@ $(document).ready(function () {
                 if (res.backlog.length > 0) {
                     let backlogRows = res.backlog.map(task => [
                         task.taskID,
-                        task.name,
+                        `<a href="<?= base_url('board/task/view/') ?>${task.taskID}" target="_blank" class="fw-semibold text-primary">${task.name}</a>`,
                         `<span class="badge ${task.priority=='High'?'bg-danger':(task.priority=='Normal'?'bg-warning text-dark':'bg-success')}">${task.priority}</span>`,
                         `<span class="badge bg-secondary">Backlog</span>`,
                         task.assigneeName ?? 'Unassigned',
@@ -178,11 +176,11 @@ $(document).ready(function () {
                 backlogTable.draw();
                 $('#backlogCount').text(res.backlog.length + ' Items');
 
-                // Current Sprint Tasks (only if sprint selected)
+                // Current Sprint Tasks
                 if (res.currentSprintTasks.length > 0) {
                     let sprintRows = res.currentSprintTasks.map(task => [
                         task.taskID,
-                        task.name,
+                        `<a href="<?= base_url('board/task/view/') ?>${task.taskID}" target="_blank" class="fw-semibold text-primary">${task.name}</a>`,
                         `<span class="badge ${task.status=='Completed'?'bg-success':(task.status=='In Progress'?'bg-warning text-dark':'bg-secondary')}">${task.status}</span>`,
                         `<span class="badge ${task.priority=='High'?'bg-danger':(task.priority=='Normal'?'bg-warning text-dark':'bg-success')}">${task.priority}</span>`,
                         task.assigneeName ?? 'Unassigned',
