@@ -13,25 +13,30 @@ class ProjectsModel extends Model
     protected $returnType       = 'array';
     protected $allowedFields    = [
         'orgID', 'deptID', 'clientID', 'name',
-        'startDate', 'endDate', 'status', 'dateCreated', 'dateModified'
+        'startDate', 'endDate', 'status', 'dateCreated', 'dateModified','description'
     ];
 
-    public function getProjectsWithJoins($userID)
-    {
-        return $this->select('
-                    projects.*, 
-                    clients.name as clientName, 
-                    department.name as deptName, 
-                    organization.name as orgName
-                ')
-            ->join('clients', 'clients.clientID = projects.clientID', 'left')
-            ->join('department', 'department.deptID = projects.deptID', 'left')
-            ->join('organization', 'organization.orgID = projects.orgID', 'left')
-            ->join('userprojects', 'userprojects.projectID = projects.projectID') // your junction table
-            ->where('userprojects.userID', $userID)
-            // ->where('userprojects.role', $role)
-            ->findAll();
+    public function getProjectsWithJoins($userID, $role)
+{
+    $builder = $this->select('
+                projects.*, 
+                clients.name as clientName, 
+                department.name as deptName, 
+                organization.name as orgName
+            ')
+        ->join('clients', 'clients.clientID = projects.clientID', 'left')
+        ->join('department', 'department.deptID = projects.deptID', 'left')
+        ->join('organization', 'organization.orgID = projects.orgID', 'left');
+
+    // If not admin, restrict by user ID
+    if ($role !== 'admin') {
+        $builder->join('userprojects', 'userprojects.projectID = projects.projectID')
+                ->where('userprojects.userID', $userID);
     }
+
+    return $builder->findAll();
+}
+
 
 
     protected $useTimestamps = false;

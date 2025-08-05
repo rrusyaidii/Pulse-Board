@@ -1,3 +1,4 @@
+<?php $role = session()->get('role'); ?>
 <div class="sidebar-wrapper" sidebar-layout="stroke-svg">
   <div>
     <!-- Logo Section -->
@@ -79,6 +80,24 @@
             </ul>
           </li>
           <!-- End Board Menu -->
+
+          <?php if ($role === 'admin') : ?>
+          <!-- Admin Menu -->
+          <li class="sidebar-list">
+            <a class="sidebar-link sidebar-title" href="#">
+              <i class="icon-settings"></i>
+              <span>Admin Panel</span>
+            </a>
+            <ul class="sidebar-submenu">
+              <li><a href="<?= base_url('admin/users') ?>">Users</a></li>
+              <li><a href="<?= base_url('admin/organizations') ?>">Organizations</a></li>
+              <li><a href="<?= base_url('admin/departments') ?>">Departments</a></li>
+              <li><a href="<?= base_url('admin/clients') ?>">Clients</a></li>
+
+            </ul>
+          </li>
+        <?php endif; ?>
+
         </ul>
       </div>
       <div class="right-arrow" id="right-arrow"><i data-feather="arrow-right"></i></div>

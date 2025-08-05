@@ -38,20 +38,23 @@
         <div class="card-body">
         <div class="row">
            <div class="col-sm-12">
-                    <form class="needs-validation" novalidate="" action="<?= base_url('project/project/createProject') ?>" method="post">
+                    <form class="needs-validation" novalidate="" action="<?= base_url('project/project/updateProject/' . $project['projectID']) ?>" method="post">
                     <?= csrf_field() ?>
                     
                     <div class="row g-3 mb-3">
                       <div class="col-md-6">
                         <label class="form-label" for="name">Project Name</label>
-                        <input class="form-control" id="name" name="name" type="text" placeholder="Enter project name" required="">
+                        <input class="form-control" id="name" name="name" type="text" value="<?= esc($project['name']) ?>" required>
+
                       </div>
                       <div class="col-md-6">
                         <label class="form-label" for="orgID">Organization</label>
                         <select class="form-select" id="orgID" name="orgID">
                           <option selected="" disabled="" value="">Choose Organization...</option>
                           <?php foreach ($organizations as $organization) : ?>
-                            <option value="<?= $organization['orgID']?>"><?=$organization['name']?></option>
+                            <option value="<?= $organization['orgID']?>" <?= $organization['orgID'] == $project['orgID'] ? 'selected' : '' ?>>
+                            <?= $organization['name'] ?>
+                            </option>
                           <?php endforeach; ?>
                         </select>
                       </div>
@@ -63,7 +66,9 @@
                         <select class="form-select" id="deptID" name="deptID">
                           <option selected="" disabled="" value="">Choose Department...</option>
                           <?php foreach ($departments as $department) :?>
-                            <option value="<?= $department['deptID']?>"><?= $department['name']?></option>
+                            <option value="<?= $department['deptID']?>" <?= $department['deptID'] == $project['deptID'] ? 'selected' : '' ?>>
+                                <?= $department['name'] ?>
+                            </option>
                           <?php endforeach; ?>
                         </select>
                       </div>
@@ -72,69 +77,75 @@
                         <select class="form-select" id="clientID" name="clientID">
                           <option selected="" disabled="" value="">Choose Client...</option>
                             <?php foreach ($clients as $client) :?>
-                                <option value="<?= $client['clientID']?>"><?= $client['name']?></option>
+                                <option value="<?= $client['clientID']?>" <?= $client['clientID'] == $project['clientID'] ? 'selected' : '' ?>>
+                                    <?= $client['name'] ?>
+                                </option>
                             <?php endforeach; ?>
                         </select>
                       </div>
-                    </div>
 
-                    <div class="row g-3 mb-3">
-                      <div class="col-md-6">
-                        <label class="form-label" for="startDate">Start Date</label>
-                        <input class="form-control" id="startDate" name="startDate" type="date" required="">
-                        <div class="valid-feedback">Looks good!</div>
-                        <div class="invalid-feedback">Please provide a start date.</div>
-                      </div>
-                      <div class="col-md-6">
-                        <label class="form-label" for="endDate">End Date</label>
-                        <input class="form-control" id="endDate" name="endDate" type="date">
-                        <div class="valid-feedback">Looks good!</div>
+                      <div class="row g-3 mb-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="startDate">Start Date</label>
+                            <input class="form-control" id="startDate" name="startDate" type="date" required
+                            value="<?= $project['startDate'] ?>">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="endDate">End Date</label>
+                            <input class="form-control" id="endDate" name="endDate" type="date"
+                            value="<?= $project['endDate'] ?>">
+                        </div>
                       </div>
 
                       <div class="col-md-6 ">
                         <label class="form-label" for="status">Project Status</label>
                         <select class="form-select" id="status" name="status" required="">
-                          <option selected="" disabled="" value="">Choose Status...</option>
-                          <option value="planning">Planning</option>
-                          <option value="active">Active</option>
-                          <option value="completed">Completed</option>
-                          <option value="cancelled">Cancelled</option>
-                        </select>  
+                            <option selected="" disabled="" value="">Choose Status...</option>
+                            <option value="planning" <?= $project['status'] == 'planning' ? 'selected' : '' ?>>Planning</option>
+                            <option value="active" <?= $project['status'] == 'active' ? 'selected' : '' ?>>Active</option>
+                            <option value="completed" <?= $project['status'] == 'completed' ? 'selected' : '' ?>>Completed</option>
+                            <option value="cancelled" <?= $project['status'] == 'cancelled' ? 'selected' : '' ?>>Cancelled</option>
+                        </select>
                       </div>
 
                       <div class="col-xs-12">
                         <label class="form-label" for="description">Description</label>
-                        <textarea class="form-control" id="description" name="description" rows="4" placeholder="Enter project description here..." required></textarea>
+                        <textarea class="form-control" id="description" name="description" rows="4" placeholder="Enter project description here..." required><?= isset($project['description']) ? esc($project['description']) : '' ?></textarea>
                       </div>
-
-
                     </div>
+
+                    
 
                     <!-- User Assignments Section -->
                     <div class="row g-3 mb-3" id="user-assignments-wrapper">
                     <label class="form-label">Assign Users</label>
 
+                    <?php foreach ($assignedUsers as $assigned): ?>
                     <div class="user-assignment row mb-2">
-                        <div class="col-md-6">
-                        <select name="userID[]" id="userID" class="form-select" required>
-                            <option value="" disabled selected>Choose User...</option>
-                            <?php foreach ($users as $user): ?>
-                            <option value="<?= $user['userID'] ?>"><?= $user['name'] ?></option>
-                            <?php endforeach; ?>
+                    <div class="col-md-6">
+                        <select name="userID[]" class="form-select" required>
+                        <option value="" disabled>Choose User...</option>
+                        <?php foreach ($users as $user): ?>
+                            <option value="<?= $user['userID'] ?>" <?= $user['userID'] == $assigned['userID'] ? 'selected' : '' ?>>
+                            <?= $user['name'] ?>
+                            </option>
+                        <?php endforeach; ?>
                         </select>
-                        </div>
-                        <div class="col-md-4">
-                        <select name="roles[]" class="form-select" required>
-                            <option value="" disabled selected>Choose Role...</option>
-                            <option value="manager">Manager</option>
-                            <option value="developer">Developer</option>
-                            <option value="qa">QA</option>
-                        </select>
-                        </div>
-                        <div class="col-md-2">
-                        <button type="button" class="btn btn-danger btn-remove-user">Remove</button>
-                        </div>
                     </div>
+                    <div class="col-md-4">
+                        <select name="roles[]" class="form-select" required>
+                        <option value="" disabled>Choose Role...</option>
+                        <option value="manager" <?= $assigned['role'] == 'manager' ? 'selected' : '' ?>>Manager</option>
+                        <option value="developer" <?= $assigned['role'] == 'developer' ? 'selected' : '' ?>>Developer</option>
+                        <option value="qa" <?= $assigned['role'] == 'qa' ? 'selected' : '' ?>>QA</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="button" class="btn btn-danger btn-remove-user">Remove</button>
+                    </div>
+                    </div>
+                    <?php endforeach; ?>
+
                     </div>
 
                     <div class="mb-5">
@@ -142,7 +153,7 @@
                     </div>
 
 
-                    <button class="btn btn-primary mt-3" type="submit">Create Project</button>
+                    <button class="btn btn-primary mt-3" type="submit">Edit Project</button>
                     </form>
             </div>
 
@@ -176,6 +187,20 @@ document.addEventListener('click', function (e) {
   }
 });
 </script>
+
+<?php if (session()->getFlashdata('success')): ?>
+  <script>
+    swal({
+      title: "Success",
+      text: "<?= session('success') ?>",
+      icon: "success",
+      button: "OK",
+    }).then(() => {
+      window.location.href = "<?= base_url('/project/project') ?>"; // redirect after OK
+    });
+  </script>
+<?php endif; ?>
+
 
 
 <?= $this->endSection() ?>
