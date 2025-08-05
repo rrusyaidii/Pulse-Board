@@ -379,6 +379,8 @@ class Admin extends BaseController
         $departmentModel = new DepartmentModel();
         date_default_timezone_set('Asia/Kuala_Lumpur');
 
+        $deptID = $this->request->getPost('deptID');
+
         $data = [
             'name'        => $this->request->getPost('name'),
             'orgID'       => $this->request->getPost('orgID'),
@@ -386,9 +388,51 @@ class Admin extends BaseController
             'dateCreated' => date('Y-m-d H:i:s'),
         ];
 
-        $departmentModel->insert($data);
+        if (!empty($deptID)) {
+            // update department
+            $data['updated_at'] = date('Y-m-d H:i:s');
+            $departmentModel->update($deptID, $data);
+            $message = 'Department updated successfully.';
+        } else {
+            // create new department
+            $data['dateCreated'] = date('Y-m-d H:i:s');
+            $departmentModel->insert($data);
+            $deptID = $departmentModel->getInsertID();
+            $message = 'Department created successfully.';
+        }
 
-        return redirect()->to(base_url('admin/departments'))->with('success', 'Department created successfully.');
+        return redirect()->to(base_url('admin/departments'))->with('success', $message);
+    }
+
+    public function editDepartments($deptID)
+    {
+        $organizationModel = new \App\Models\OrganizationModel();
+        $departmentModel = new \App\Models\DepartmentModel();
+        $clientsModel = new \App\Models\ClientsModel();
+
+        $department = $departmentModel->find($deptID);
+
+        if (!$department) {
+            return redirect()->to(base_url('admin/departments'))->with('error', 'Department not found.');
+        }
+
+        $data = [
+            'title'         => 'Update Department',
+            'breadcrumbs'   => 'Update Department',
+            'department'    => $department,
+            'organizations' => $organizationModel->findAll(),
+            'departments'   => $departmentModel->findAll(),
+            'clients'       => $clientsModel->findAll(),
+        ];
+        
+        return view('admin/createDepartment', $data);
+    }
+
+    public function deleteDepartments($deptID)
+    {
+        $departmentModel = new DepartmentModel();
+        $departmentModel->where('deptID', $deptID)->set('status', 'inactive')->update();
+        return redirect()->to(base_url('admin/departments'))->with('success', 'Department has been deleted.');
     }
 
     public function departmentsAjax()
@@ -401,7 +445,7 @@ class Admin extends BaseController
         $length = $request->getVar('length');
         $search = $request->getVar('search')['value'];
 
-        $deptModel->select('deptID, name,status');
+        $deptModel->select('deptID, name, status')->where('status', 'active');
 
         if (!empty($search)) {
             $deptModel->groupStart()
@@ -417,18 +461,23 @@ class Admin extends BaseController
         foreach ($departments as $department) {
             $result[] = [
                 'no'         => $i++,
+                'id'         => $department['deptID'],
                 'department' => $department['name'],
                 'status'     => $department['status'],
             ];
         }
 
+        $totalActive = (new DepartmentModel())
+                    ->where('status', 'active')
+                    ->countAllResults();
+
         $output = [
             'draw'            => intval($draw),
-            'recordsTotal'    => $deptModel->countAll(),
+            'recordsTotal'    => $totalActive,
+            // 'recordsTotal'    => $deptModel->countAll(),
             'recordsFiltered' => $totalFiltered,
             'data'            => $result,
         ];
-
 
         return $this->response->setJSON($output);
     }

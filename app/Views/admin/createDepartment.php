@@ -42,13 +42,20 @@
                     <form class="needs-validation" novalidate="" action="<?= base_url('admin/addDepartments') ?>" method="post">
                     <?= csrf_field() ?>
                     
+                    <?php if (isset($department['deptID'])) : ?>
+                      <input type="hidden" name="deptID" value="<?= esc($department['deptID']) ?>">
+                    <?php endif; ?>
+
                     <div class="row g-3 mb-3">
                       <div class="col-md-6">
                         <label class="form-label" for="orgID">Organization</label>
-                        <select class="form-select" id="orgID" name="orgID">
-                          <option selected="" disabled="" value="">Choose Organization...</option>
+                        <select class="form-select" id="orgID" name="orgID" required>
+                          <option disabled value="" <?= empty($department['orgID']) ? 'selected' : '' ?>>Choose Organization...</option>
                           <?php foreach ($organizations as $organization) : ?>
-                            <option value="<?= $organization['orgID']?>"><?=$organization['name']?></option>
+                            <option value="<?= $organization['orgID'] ?>"
+                              <?= (isset($department['orgID']) && $department['orgID'] == $organization['orgID']) ? 'selected' : '' ?>>
+                              <?= esc($organization['name']) ?>
+                            </option>
                           <?php endforeach; ?>
                         </select>
                       </div>
@@ -57,13 +64,13 @@
                     <div class="row g-3 mb-3">
                       <div class="col-md-6">
                         <label class="form-label" for="name">Name</label>
-                        <input class="form-control" id="name" name="name" type="text" placeholder="Enter name" required="">
+                        <input class="form-control" id="name" name="name" type="text" value="<?= isset($department['name']) ? $department['name'] : '' ?>" placeholder="<?= isset($department['name']) ? 'Enter Name' : 'Enter Name' ?>" required="">
                       </div>
                     </div>
 
                     <input type="hidden" id="status" name="status" value="active">
 
-                    <button class="btn btn-primary mt-3" type="submit">Create Organization</button>
+                    <button class="btn btn-primary mt-3" type="submit"><?= $title ?></button>
                     </form>
             </div>
 
