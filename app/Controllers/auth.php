@@ -26,9 +26,9 @@ class Auth extends Controller
             // Set session data
             $session->set([
                 'userID' => $user['userID'],
-                'name'   => $user['name'],
-                'email'  => $user['email'],
-                'role'   => $user['role'],
+                'name' => $user['name'],
+                'email' => $user['email'],
+                'role' => $user['role'],
                 'logged_in' => true
             ]);
 
