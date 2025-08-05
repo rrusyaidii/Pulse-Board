@@ -47,6 +47,10 @@
         <div class="row">
 
             <?php foreach ($projects as $project): ?>
+                <?php
+                    $currentProjectRole = $projectRoles[$project['projectID']] ?? null;
+                    $userSessionRole = session()->get('role');
+                ?>
                 <div class="col-xl-4 col-md-6 mb-4">
                     <div class="project-box border rounded-4 p-3 pb-0 h-100">
                         <?php
@@ -129,14 +133,10 @@
                         </div>
 
 
-
-                    <?php if (session()->get('role') === 'admin' || session()->get('role') === 'manager'): ?>
-                        <a class="btn btn-primary" href="<?= base_url('project/project/edit/'.$project['projectID'] ) ?>">Edit</a>
+                    <?php if ($userSessionRole === 'admin' || $currentProjectRole === 'manager'): ?>
+                        <a class="btn btn-primary" href="<?= base_url('project/project/edit/'.$project['projectID']) ?>">Edit</a>
                     <?php endif; ?>
-
-                    <?php if (session()->get('role') === 'user'): ?>
-                        <a class="btn btn-primary" href="<?= base_url('project/project/view/'.$project['projectID'] ) ?>">View</a>
-                    <?php endif; ?>
+                    <a class="btn btn-primary me-1" href="<?= base_url('project/project/view/'.$project['projectID']) ?>">View</a>
 
                     </div>
                 </div>

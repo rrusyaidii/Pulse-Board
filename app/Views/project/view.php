@@ -38,7 +38,7 @@
         <div class="card-body">
         <div class="row">
            <div class="col-sm-12">
-                    <form class="needs-validation" novalidate="" action="<?= base_url('project/project/updateProject/' . $project['projectID']) ?>" method="post">
+                    <form class="needs-validation" novalidate=""  ?>
                     <?= csrf_field() ?>
                     
                     <div class="row g-3 mb-3">
@@ -162,8 +162,8 @@
 
 
 
-                    <button class="btn btn-primary mt-3" href="<?= base_url('/project/project') ?>">Back</button>
-                    </form>
+                  </form>
+                    <a class="btn btn-primary mt-3" href="<?= base_url('/project/project') ?>">Back</a>
             </div>
 
         </div>

@@ -12,53 +12,112 @@ use App\Models\TasksModel;
 
 class Project extends BaseController
 {
-    public function index()
-    {
-        $model = new ProjectsModel();
-        $userID = session()->get('userID');
-        $role = session()->get('role');
-        $taskStats = $this->getTaskStatsByProject();
+    // app/Controllers/Project/Project.php (method index)
+public function index()
+{
+    $projectsModel = new ProjectsModel();
+    $userProjectModel = new UserProjectsModel();
 
-        $projects = $model->getProjectsWithJoins($userID, $role);
+    $userID = session()->get('userID');
+    $role   = session()->get('role');
 
-        $data = [
-            'title' => 'Project Overview',
-            'breadcrumbs' => 'My Project',
-            'projects' => $projects,
-            'taskStats'   => $taskStats,
-
-        ];
-
-        return view('project/project_overview', $data);
+    // Build project role map for current user
+    $userAssignments = $userProjectModel->where('userID', $userID)->findAll();
+    $projectRoles = [];
+    $assignedProjectIds = [];
+    foreach ($userAssignments as $assign) {
+        $projectRoles[$assign['projectID']] = $assign['role'];
+        $assignedProjectIds[] = $assign['projectID'];
     }
 
-    public function archive()
-    {
-        $db     = \Config\Database::connect();
-        $userID = session()->get('userID');
-        $role   = session()->get('role');
+    // Get projects: if admin -> all (non-archived). otherwise only assigned projects.
+    $projectsQuery = $projectsModel
+        ->select('projects.*, clients.name as clientName, department.name as deptName, organization.name as orgName')
+        ->join('clients', 'clients.clientID = projects.clientID', 'left')
+        ->join('department', 'department.deptID = projects.deptID', 'left')
+        ->join('organization', 'organization.orgID = projects.orgID', 'left')
+        ->where('projects.status !=', 'archived'); // exclude archived
 
-        $builder = $db->table('projects')
-            ->select('projects.*, clients.name AS clientName, department.name AS deptName')
-            ->join('clients', 'clients.clientID = projects.clientID', 'left')
-            ->join('department', 'department.deptID = projects.deptID', 'left')
-            ->join('userprojects', 'userprojects.projectID = projects.projectID', 'left')
-            ->where('projects.status', 'archived');
-
-        if ($role !== 'admin') {
-            $builder->where('userprojects.userID', $userID);
+    if ($role !== 'admin') {
+        if (empty($assignedProjectIds)) {
+            // User has no assignments -> empty list
+            $projects = [];
+        } else {
+            $projects = $projectsQuery->whereIn('projects.projectID', $assignedProjectIds)->findAll();
         }
-
-        $projects = $builder->get()->getResultArray();
-
-        $data = [
-            'title'       => 'Archived Projects',
-            'breadcrumbs' => 'Archived Projects',
-            'projects'    => $projects,
-        ];
-
-        return view('project/archived', $data);
+    } else {
+        // admin sees all (non-archived)
+        $projects = $projectsQuery->findAll();
     }
+
+    // get task stats (your existing method)
+    $taskStats = $this->getTaskStatsByProject();
+
+    $data = [
+        'title' => 'Project Overview',
+        'breadcrumbs' => 'My Project',
+        'projects' => $projects,
+        'taskStats' => $taskStats,
+        'projectRoles' => $projectRoles, // pass role map to view
+    ];
+
+    return view('project/project_overview', $data);
+}
+
+
+public function archive()
+{
+    $projectsModel     = new \App\Models\ProjectsModel();
+    $userProjectModel  = new \App\Models\UserProjectsModel();
+
+    $userID = session()->get('userID');
+    $role   = session()->get('role');
+
+    // Build project role map for current user
+    $userAssignments = $userProjectModel->where('userID', $userID)->findAll();
+    $projectRoles = [];
+    $assignedProjectIds = [];
+    foreach ($userAssignments as $assign) {
+        $projectRoles[$assign['projectID']] = $assign['role'];
+        $assignedProjectIds[] = $assign['projectID'];
+    }
+
+    // Prepare base query: archived projects joined with clients/dept/org
+    $projectsQuery = $projectsModel
+        ->select('projects.*, clients.name as clientName, department.name as deptName, organization.name as orgName')
+        ->join('clients', 'clients.clientID = projects.clientID', 'left')
+        ->join('department', 'department.deptID = projects.deptID', 'left')
+        ->join('organization', 'organization.orgID = projects.orgID', 'left')
+        ->where('projects.status', 'archived');
+
+    if ($role !== 'admin') {
+        if (empty($assignedProjectIds)) {
+            $projects = []; // user has no archived assignments
+        } else {
+            $projects = $projectsQuery->whereIn('projects.projectID', $assignedProjectIds)->findAll();
+        }
+    } else {
+        // admin sees all archived projects
+        $projects = $projectsQuery->findAll();
+    }
+
+    // optionally reuse your task stats method if you want the same boxes
+    $taskStats = $this->getTaskStatsByProject();
+
+
+    $data = [
+        'title'       => 'Archived Projects',
+        'breadcrumbs' => 'Archived Projects',
+        'projects'    => $projects,
+        'projectRoles'=> $projectRoles,
+        'taskStats'   => $taskStats,
+    ];
+
+
+
+    return view('project/archived', $data);
+}
+
 
 
     public function create()
