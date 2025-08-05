@@ -33,7 +33,7 @@ class Admin extends BaseController
         $length = $request->getVar('length');
         $search = $request->getVar('search')['value'];
 
-        $userModel->select('userID, name, email, role');
+        $userModel->select('userID, name, email, role')->where('status', 'active');
 
         if (!empty($search)) {
             $userModel->groupStart()
@@ -58,9 +58,14 @@ class Admin extends BaseController
             ];
         }
 
+        $totalActive = (new UserModel())
+                    ->where('status', 'active')
+                    ->countAllResults();
+
         $output = [
             'draw'            => intval($draw),
-            'recordsTotal'    => $userModel->countAll(),
+            // 'recordsTotal'    => $userModel->countAll(),
+            'recordsTotal'    => $totalActive,
             'recordsFiltered' => $totalFiltered,
             'data'            => $result,
         ];
@@ -149,6 +154,13 @@ class Admin extends BaseController
         ];
         
         return view('admin/createUser', $data);
+    }
+
+    public function deleteUser($userID)
+    {
+        $userModel = new UserModel();
+        $userModel->where('userID', $userID)->set('status', 'inactive')->update();
+        return redirect()->to(base_url('admin/users'))->with('success', 'User has been deleted.');
     }
 
     public function edit($projectID)
