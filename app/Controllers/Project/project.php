@@ -169,7 +169,38 @@ class Project extends BaseController
 
     }
 
+        public function view($projectID)
+    {
+        $data = [
+            'title' => 'View Project',
+            'breadcrumbs' => 'View Project',
+        ];
 
+        $organizationModel = new OrganizationModel();
+        $departmentModel = new DepartmentModel();
+        $clientsModel = new ClientsModel();
+        $userModel = new \App\Models\UserModel();
+        $projectModel = new \App\Models\ProjectsModel();
+        $userProjectModel = new \App\Models\UserProjectsModel();
+
+        $project = $projectModel->find($projectID);
+        if (!$project) {
+            throw new \CodeIgniter\Exceptions\PageNotFoundException("Project not found");
+        }
+        $data['project'] = $project;
+        $data['users'] = $userModel->findAll();
+
+
+        $data['organizations'] = $organizationModel->findAll();
+        $data['departments'] = $departmentModel->findAll();
+        $data['clients'] = $clientsModel->findAll();
+        $data['assignedUsers'] = $userProjectModel
+        ->where('projectID', $projectID)
+        ->findAll();
+
+
+        return view('project/view', $data);
+    }
 
 }
 

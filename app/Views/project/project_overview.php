@@ -25,7 +25,7 @@
   <div class="container-fluid">
     <!-- Start of project-cards -->
     <div class="row project-cards">
-        <?php if (session()->get('role') === 'admin'): ?>
+        <?php if (session()->get('role') === 'admin' || session()->get('role') === 'manager'): ?>
         <div class="col-md-12 project-list">
             <div class="card">
                 <div class="row">
@@ -46,7 +46,37 @@
         <div class="card-body">
         <div class="row">
            
-            
+           <!-- Project 1 -->
+            <div class="col-xl-4 col-md-6 mb-4">
+                <div class="project-box border rounded-4 p-3 h-100">
+                <span class="badge bg-primary mb-2">Doing</span>
+                <h6>Endless Admin Design</h6>
+                <div class="media mb-2">
+                    <img class="img-20 me-2 rounded-circle" src="assets/images/user/3.jpg" alt="">
+                    <div class="media-body">
+                    <p class="mb-0">Themeforest, Australia</p>
+                    </div>
+                </div>
+                <p>Lorem Ipsum is simply dummy text of the printing industry.</p>
+                <div class="row details mb-2">
+                    <div class="col-6"><span>Total Task</span></div>
+                    <div class="col-6 text-primary">12</div>
+                    <div class="col-6"><span>Total Open Task</span></div>
+                    <div class="col-6 text-primary">5</div>
+                    <div class="col-6"><span>Total Resolved </span></div>
+                    <div class="col-6 text-primary">7</div>
+                </div>
+                <div class="project-status mt-2">
+                    <div class="media mb-1">
+                    <p class="mb-0">70%</p>
+                    <div class="media-body text-end"><span>Done</span></div>
+                    </div>
+                    <div class="progress" style="height: 5px;">
+                    <div class="progress-bar bg-primary progress-bar-striped progress-bar-animated" style="width: 70%;"></div>
+                    </div>
+                </div>
+                </div>
+            </div> 
 
             <?php foreach ($projects as $project): ?>
                 <div class="col-xl-4 col-md-6 mb-4">
@@ -74,7 +104,6 @@
                             <p class="mb-0"><?= esc($project['clientName']) ?></p>
                         </div>
 
-                        <p><?= esc($project['description'] ?? 'No description provided.') ?></p>
 
                         <div class="row details mb-2">
                             <div class="col-6"><span>Total Task</span></div>
@@ -96,8 +125,12 @@
                         </div>
 
 
-                    <?php if (session()->get('role') === 'admin'): ?>
+                    <?php if (session()->get('role') === 'admin' || session()->get('role') === 'manager'): ?>
                         <a class="btn btn-primary" href="<?= base_url('project/project/edit/'.$project['projectID'] ) ?>">Edit</a>
+                    <?php endif; ?>
+
+                    <?php if (session()->get('role') === 'user'): ?>
+                        <a class="btn btn-primary" href="<?= base_url('project/project/view/'.$project['projectID'] ) ?>">View</a>
                     <?php endif; ?>
 
                     </div>
