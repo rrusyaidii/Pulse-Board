@@ -49,6 +49,7 @@
             <th>Username</th>
             <th>Email</th>
             <th>Organization</th>
+            <th>Department</th>
             <th>Role</th>
             <th>Actions</th>
           </tr>
@@ -74,6 +75,7 @@
         { data: 'username' },
         { data: 'email' },
         { data: 'organization'},
+        { data: 'department'},
         { data: 'role',
           render: function (data, type, row) {
             return data.charAt(0).toUpperCase() + data.slice(1);
