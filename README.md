@@ -1,63 +1,82 @@
-# Pulse Board – ZANKO Hackathon 2025 Submission
-
-A lightweight, team-based project tracking tool inspired by Azure DevOps.  
-Built during Hackathon 2025 to solve real-world project coordination challenges.
+# Debugs Thugs – ZANKO Hackathon 2025 Submission
 
 ---
 
 ## 🧠 Problem Statement
 
-Our team faced the following issues in real-life project management:
-
 1. **Inefficient Task Handover**  
-   Lack of accessible task history and context makes team transitions manual and time-consuming.
 
-2. **Limited Historical Tracking**  
-   No centralized way to view past issues or development activity logs.
+2. **Limited Tracking and Progress Visibility**  
 
 3. **Difficulty in Progress Tracking**  
-   Hard to monitor team or individual task progress effectively.
 
 4. **Methodology Mismatch**  
-   Agile principles are applied, but task visibility and tracking are missing, leading to confusion and poor alignment.
-
----
-
-## 💡 Solution
-
-This system provides:
-
-
 
 ---
 
 ## ⚙️ Tech Stack
 
-- **Backend**: CodeIgniter 4
+- **Backend**: CodeIgniter 4 (PHP 8.1.12)
 - **Database**: MySQL / MariaDB
-- **Frontend**: Bootstrap 5
+- **Frontend**: Bootstrap 5 + jQuery
 - **API**: REST API
 
 ---
 
-## 🚀 Getting Started
+## 🚀 Installation & Setup
 
-1. Clone the repo
-2. Set up your `.env` / `Database.php`
-3. Run `php spark migrate`
-4. Launch via `http://localhost/`
+### **Requirements**
+
+- PHP **8.1.12** or higher  
+- Composer **2.x**  
+- MySQL / MariaDB  
+- Apache / Nginx with `mod_rewrite` enabled  
 
 ---
 
-## 👥 Team & Acknowledgements
+### **1. Clone the repository**
 
+```bash
+git clone https://github.com/yourusername/pulse-board.git
+cd pulse-board
+``` 
+
+### **2. Install dependencies**
+Run following command
+```bash 
+composer install
+```
+### **3. Configure environment**
+** Copy .env.example to .env (or update app/Config/Database.php):**
+```bash 
+cp env .env
+```
+ Update the following in .env:
+
+```bash 
+CI_ENVIRONMENT = development
+
+database.default.hostname = localhost
+database.default.database = pulse_board
+database.default.username = root
+database.default.password = 
+database.default.DBDriver = MySQLi
+```
+
+### **4. Import the database into the DB**
+```bash
+pulseboard.sql
+```
+### **5. Start the development server**
+```bash
+php spark serve
+```
+---
+## 👥 Team & Acknowledgements
 - Developed during Hackathon 2025
 - Inspired by issues faced in real development workflows
 - Mentor: Cik Mimi
-- Team Member: Faiz Aiman, Haziq Rusyaidi, Nur Syazlin, Nur Afiqah, Husna Umairah 
+- Team Members: Faiz Aiman (Team Lead/Developer) , Nur Afiqah (Developer) ,Haziq Rusyaidi (Developer), Nur Syazlin (System Analyst) ,Husna Umairah(System Analyst)
 
----
 
-## 📄 License
 
-MIT
