@@ -1,0 +1,26 @@
+# Use official PHP image with Apache
+FROM php:8.1-apache
+
+# Enable Apache rewrite module (needed for CI4 routing)
+RUN a2enmod rewrite
+
+# Install PHP extensions
+RUN apt-get update && apt-get install -y \
+    zip unzip git curl libzip-dev libpng-dev libonig-dev libxml2-dev \
+    && docker-php-ext-install zip mysqli pdo pdo_mysql
+
+# Install Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Copy the entire CodeIgniter app into the container
+COPY . /var/www/html
+
+# Set correct permissions
+RUN chown -R www-data:www-data /var/www/html \
+    && chmod -R 755 /var/www/html
+
+# Override Apache config to set document root to /public
+COPY ./000-default.conf /etc/apache2/sites-available/000-default.conf
