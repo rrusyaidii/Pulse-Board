@@ -47,7 +47,9 @@
           <tr>
             <th>#</th>
             <th>Client</th>
+            <th>Address</th>
             <th>Status</th>
+            <th>Actions</th>
           </tr>
         </thead>
       </table>
@@ -56,10 +58,11 @@
 </div>
 
 <!-- DataTables -->
-<link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
+<!-- <link rel="stylesheet" href="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css">
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script>
-
+<script src="https://cdn.datatables.net/1.13.4/js/jquery.dataTables.min.js"></script> -->
+<?= $this->endSection() ?>
+<?= $this->section('script') ?>
 <script>
   $(document).ready(function () {
     $('#userTable').DataTable({
@@ -69,12 +72,36 @@
       columns: [
         { data: 'no' },
         { data: 'client' }, // this is mapped to 'name'
+        { data: 'address' },
         { data: 'status',
             render: function (data, type, row) {
             return data.charAt(0).toUpperCase() + data.slice(1);
           }
-         }
-        ]
+        },
+        {
+          data: null,
+          orderable: false,
+          searchable: false,
+          render: function (data, type, row) {
+            const editUrl = "<?= base_url('admin/editClient') ?>/" + data.id;
+            const deleteUrl = "<?= base_url('admin/deleteClient') ?>/" + data.id;
+            return `
+             <a href="${editUrl}" class="btn btn-warning me-1" title="Edit" style="padding: 2px 6px; font-size: 0.75rem;">
+                <i data-feather="edit"></i>
+              </a>
+
+              <a href="${deleteUrl}" class="btn btn-sm btn-danger" title="Delete" style="padding: 2px 6px; font-size: 0.75rem;" onclick="return confirm('Are you sure you want to delete this organization?')">
+                <i data-feather="trash-2"></i>
+              </a>
+            `;
+          }
+        }
+      ],
+      drawCallback: function(settings) {
+        if (window.feather) {
+          feather.replace();
+        }
+      }
     });
   });
 </script>

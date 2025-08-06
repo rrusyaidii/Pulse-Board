@@ -87,7 +87,7 @@
                 <i data-feather="edit"></i>
               </a>
 
-              <a href="${deleteUrl}" class="btn btn-sm btn-danger" title="Delete" style="padding: 2px 6px; font-size: 0.75rem;" onclick="return confirm('Are you sure you want to delete this user?')">
+              <a href="${deleteUrl}" class="btn btn-sm btn-danger" title="Delete" style="padding: 2px 6px; font-size: 0.75rem;" onclick="return confirm('Are you sure you want to delete this organization?')">
                 <i data-feather="trash-2"></i>
               </a>
             `;

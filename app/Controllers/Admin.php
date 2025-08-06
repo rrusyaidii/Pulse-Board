@@ -117,7 +117,7 @@ class Admin extends BaseController
 
         if (!empty($userID)) {
             // update user
-            $data['updated_at'] = date('Y-m-d H:i:s');
+            $data['dateModified'] = date('Y-m-d H:i:s');
             $userModel->update($userID, $data);
             $message = 'User updated successfully.';
         } else {
@@ -246,7 +246,7 @@ class Admin extends BaseController
 
         if (!empty($orgID)) {
             // update organization
-            $data['updated_at'] = date('Y-m-d H:i:s');
+            $data['dateModified'] = date('Y-m-d H:i:s');
             $organizationModel->update($orgID, $data);
             $message = 'User updated successfully.';
         } else {
@@ -390,7 +390,7 @@ class Admin extends BaseController
 
         if (!empty($deptID)) {
             // update department
-            $data['updated_at'] = date('Y-m-d H:i:s');
+            $data['dateModified'] = date('Y-m-d H:i:s');
             $departmentModel->update($deptID, $data);
             $message = 'Department updated successfully.';
         } else {
@@ -491,6 +491,7 @@ class Admin extends BaseController
             'title' => 'Manage Clients',
             'breadcrumbs' => 'Manage Clients',
         ];
+        // dd($data);
 
         return view('admin/clients', $data);
     }
@@ -521,6 +522,8 @@ class Admin extends BaseController
         $clientsModel = new ClientsModel();
         date_default_timezone_set('Asia/Kuala_Lumpur');
 
+        $clientID = $this->request->getPost('clientID');
+
         $data = [
             'name'        => $this->request->getPost('name'),
             'address'       => $this->request->getPost('address'),
@@ -528,9 +531,52 @@ class Admin extends BaseController
             'dateCreated' => date('Y-m-d H:i:s'),
         ];
 
-        $clientsModel->insert($data);
+        if (!empty($clientID)) {
+            // update client
+            $data['dateModified'] = date('Y-m-d H:i:s');
+            $clientsModel->update($clientID, $data);
+            $message = 'Client updated successfully.';
+        } else {
+            // create new client
+            $data['dateCreated'] = date('Y-m-d H:i:s');
+            $clientsModel->insert($data);
+            $clientID = $clientsModel->getInsertID();
+            $message = 'Client created successfully.';
+        }
 
-        return redirect()->to(base_url('admin/clients'))->with('success', 'Department created successfully.');
+        return redirect()->to(base_url('admin/clients'))->with('success', $message);
+    }
+
+    public function editClient($clientID)
+    {
+        $userModel = new \App\Models\UserModel();
+        $organizationModel = new \App\Models\OrganizationModel();
+        $departmentModel = new \App\Models\DepartmentModel();
+        $clientsModel = new \App\Models\ClientsModel();
+
+        $client = $clientsModel->find($clientID);
+
+        if (!$client) {
+            return redirect()->to(base_url('admin/clients'))->with('error', 'Client not found.');
+        }
+
+        $data = [
+            'title'         => 'Update Client',
+            'breadcrumbs'   => 'Update Client',
+            'client'        => $client,
+            'organizations' => $organizationModel->findAll(),
+            'departments'   => $departmentModel->findAll(),
+            'clients'       => $clientsModel->findAll(),
+        ];
+        
+        return view('admin/createClient', $data);
+    }
+
+    public function deleteClient($clientID)
+    {
+        $clientsModel = new ClientsModel();
+        $clientsModel->where('clientID', $clientID)->set('status', 'inactive')->update();
+        return redirect()->to(base_url('admin/clients'))->with('success', 'Client has been deleted.');
     }
 
     public function clientsAjax()
@@ -543,7 +589,7 @@ class Admin extends BaseController
         $length = $request->getVar('length');
         $search = $request->getVar('search')['value'];
 
-        $clientsModel->select('clientID, name, status');
+        $clientsModel->select('clientID, name, address, status')->where('status', 'active');
 
         if (!empty($search)) {
             $clientsModel->groupStart()
@@ -560,17 +606,26 @@ class Admin extends BaseController
         foreach ($clients as $client) {
             $result[] = [
                 'no'         => $i++,
+                'id'         => $client['clientID'],
                 'client'    => $client['name'],
+                'address'   => $client['address'],
                 'status'    => ucfirst($client['status']),
             ];
         }
 
+        $totalActive = (new ClientsModel())
+                    ->where('status', 'active')
+                    ->countAllResults();
+
         $output = [
             'draw'            => intval($draw),
-            'recordsTotal'    => $clientsModel->countAll(),
+            'recordsTotal'    => $totalActive,
+            // 'recordsTotal'    => $clientsModel->countAll(),
             'recordsFiltered' => $totalFiltered,
             'data'            => $result,
         ];
+
+        // dd($output);
 
         return $this->response->setJSON($output);
     }

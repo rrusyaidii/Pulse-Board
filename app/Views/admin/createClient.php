@@ -22,9 +22,7 @@
   </div>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
   
-  <!-- Start of container-fluid -->
   <div class="container-fluid">
-    <!-- Start of project-cards -->
     <div class="row project-cards">
         <div class="col-md-12 project-list">
                         <!-- <ul class="nav nav-tabs border-tab" id="top-tab" role="tablist">
@@ -34,7 +32,6 @@
                         </ul> -->
         </div>
 
-        <!-- Start of Listing project card -->
         <div class="card">
         <div class="card-body">
         <div class="row">
@@ -42,10 +39,14 @@
                     <form class="needs-validation" novalidate="" action="<?= base_url('admin/addClient') ?>" method="post">
                     <?= csrf_field() ?>
                     
+                    <?php if (isset($client['clientID'])) : ?>
+                      <input type="hidden" name="clientID" value="<?= esc($client['clientID']) ?>">
+                    <?php endif; ?>
+
                     <div class="row g-3 mb-3">
                       <div class="col-md-6">
                         <label class="form-label" for="name">Name</label>
-                        <input class="form-control" id="name" name="name" type="text" placeholder="Enter name" required="">
+                        <input class="form-control" id="name" name="name" type="text" value="<?= isset($client['name']) ? $client['name'] : '' ?>" placeholder="<?= isset($client['name']) ? 'Enter Name' : 'Enter Name' ?>" required="">
                       </div>
                     </div>
 
@@ -54,23 +55,19 @@
                     <div class="row g-3 mb-3">
                       <div class="col-md-6">
                         <label class="form-label" for="address">Address</label>
-                        <input class="form-control" id="address" name="address" type="text" placeholder="Enter address" required="">
+                        <input class="form-control" id="address" name="address" type="text" value="<?= isset($client['address']) ? $client['address'] : '' ?>" placeholder="<?= isset($client['address']) ? 'Enter Address' : 'Enter Address' ?>" required="">
                       </div>
                     </div>
 
-                    <button class="btn btn-primary mt-3" type="submit">Create Organization</button>
+                    <button class="btn btn-primary mt-3" type="submit"><?= $title ?></button>
                     </form>
             </div>
 
         </div>
         </div>
         </div>
-            <!-- End of Listing project card -->
     </div>
-            <!-- End of project-cards -->
-
   </div>
-<!-- End of container-fluid -->
 
 </div>
 
