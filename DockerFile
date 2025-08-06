@@ -15,12 +15,12 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Set working directory
 WORKDIR /var/www/html
 
-# Copy the entire CodeIgniter app into the container
+# Copy your application files into the container
 COPY . /var/www/html
 
-# Set correct permissions
+# Set proper permissions
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
-# Override Apache config to set document root to /public
+# Set Apache to serve from CI4's public directory
 COPY ./000-default.conf /etc/apache2/sites-available/000-default.conf
