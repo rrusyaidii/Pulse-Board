@@ -4,19 +4,25 @@
     <!-- Logo Section -->
     <div class="logo-wrapper">
       <a href="<?= base_url("/") ?>">
-        <img class="img-fluid for-light" src="<?= base_url() ?>/assets/images/logo/logo.png" alt="">
-        <img class="img-fluid for-dark" src="<?= base_url() ?>/assets/images/logo/logo_dark.png" alt="">
+        <!-- Single Logo for both modes -->
+        <img class="img-fluid new-logo" 
+             src="<?= base_url() ?>/assets/images/logo/logodebug.png" 
+             alt="Pulse Board Logo">
       </a>
+
+      <!-- Sidebar Toggle Buttons -->
       <div class="back-btn"><i class="fa fa-angle-left"></i></div>
       <div class="toggle-sidebar">
         <i class="status_toggle middle sidebar-toggle" data-feather="grid"></i>
       </div>
     </div>
 
-    <!-- Logo Icon -->
+    <!-- Logo Icon (Collapsed Sidebar) -->
     <div class="logo-icon-wrapper">
       <a href="<?= base_url("/") ?>">
-        <img class="img-fluid" src="<?= base_url() ?>/assets/images/logo/logo-icon.png" alt="">
+        <img class="img-fluid logo-icon" 
+             src="<?= base_url() ?>/assets/images/logo/logodebug.png" 
+             alt="Pulse Board Icon">
       </a>
     </div>
 
@@ -25,7 +31,7 @@
       <div class="left-arrow" id="left-arrow"><i data-feather="arrow-left"></i></div>
       <div id="sidebar-menu">
         <ul class="sidebar-links" id="simple-bar">
-          
+
           <!-- Back Button (Mobile View) -->
           <li class="back-btn">
             <div class="mobile-back text-end">
@@ -34,10 +40,9 @@
             </div>
           </li>
 
-          <!-- Dashboard Menu Item -->
+          <!-- Dashboard Menu -->
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="<?= base_url("home") ?>">
-              
               <svg class="stroke-icon">
                 <use href="<?= base_url() ?>/assets/svg/icon-sprite.svg#stroke-home"></use>
               </svg>
@@ -47,28 +52,23 @@
               <span>Dashboard</span>
             </a>
           </li>
-          <!-- End Dashboard Menu -->
 
-          <!-- Project Menu with Submenu -->
+          <!-- Project Menu -->
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="#">
-            <i class="icon-bar-chart"></i>
-              
+              <i class="icon-bar-chart"></i>
               <span>Project</span>
             </a>
             <ul class="sidebar-submenu">
               <li><a href="<?= base_url("project/project") ?>">My Projects</a></li>
               <li><a href="<?= base_url("project/project/archive") ?>">Archived Projects</a></li>
-              <!-- <li><a href="<?= base_url() ?>">Departments Projects??</a></li> -->
             </ul>
           </li>
-          <!-- End Project Menu -->
 
-          <!-- Board Menu with Submenu -->
+          <!-- Board Menu -->
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="#">
-            <i class="icon-layout-grid2"></i>
-
+              <i class="icon-layout-grid2"></i>
               <span>Board</span>
             </a>
             <ul class="sidebar-submenu">
@@ -76,13 +76,11 @@
               <li><a href="<?= base_url("board/kanban") ?>">Board</a></li>
               <li><a href="<?= base_url("board/task") ?>">Task Overview</a></li>
               <li><a href="<?= base_url("board/sprints") ?>">Sprint Planning</a></li>
-              <!-- <li><a href="<?= base_url("board/backlog") ?>">Backlog</a></li> -->
             </ul>
           </li>
-          <!-- End Board Menu -->
 
+          <!-- Admin Menu (Visible for Admin Role Only) -->
           <?php if ($role === 'admin') : ?>
-          <!-- Admin Menu -->
           <li class="sidebar-list">
             <a class="sidebar-link sidebar-title" href="#">
               <i class="icon-settings"></i>
@@ -93,10 +91,9 @@
               <li><a href="<?= base_url('admin/organizations') ?>">Organizations</a></li>
               <li><a href="<?= base_url('admin/departments') ?>">Departments</a></li>
               <li><a href="<?= base_url('admin/clients') ?>">Clients</a></li>
-
             </ul>
           </li>
-        <?php endif; ?>
+          <?php endif; ?>
 
         </ul>
       </div>

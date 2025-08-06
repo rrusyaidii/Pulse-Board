@@ -34528,6 +34528,20 @@ html[dir=rtl] .page-wrapper.compact-small .page-body-wrapper div.sidebar-wrapper
     min-width: 67%;
     width: 67%;
   }
+  /* Main Logo Styling */
+.logo-wrapper .new-logo {
+  width: 120px;
+  height: 40px;
+  object-fit: contain;
+}
+
+/* Collapsed Sidebar Icon */
+.logo-icon-wrapper .logo-icon {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
 }
 
 /**=====================

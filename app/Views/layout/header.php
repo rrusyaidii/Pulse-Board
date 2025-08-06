@@ -1,6 +1,6 @@
 <style>
 .header-logo-wrapper .logo-wrapper .new-logo {
-  /* This is where your new logo styles will go */
+ 
   width: 100px;
   height: 35px;
   object-fit: cover;
@@ -21,8 +21,8 @@
       </div>
     </form>
     <div class="header-logo-wrapper col-auto p-0">
-      <div class="logo-wrapper"><a href="<?= base_url("/") ?>"><img class="img-fluid new-logo" src="<?= base_url() ?>/assets/images/logo/logodebug.png" alt=""></a></div>
-      <div class="toggle-sidebar"><i class="status_toggle middle sidebar-toggle" data-feather="align-center"></i></div>
+    <div class="logo-wrapper"><a href="<?= base_url("/") ?>"><img class="img-fluid new-logo" src="<?= base_url() ?>/assets/images/logo/logodebug.png" alt=""></a></div>      
+    <div class="toggle-sidebar"><i class="status_toggle middle sidebar-toggle" data-feather="align-center"></i></div>
     </div>
 
     <div class="nav-right col-xxl-7 col-xl-6 col-md-7 col-8 pull-right right-header p-0 ms-auto">
