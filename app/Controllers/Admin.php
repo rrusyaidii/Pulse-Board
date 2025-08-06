@@ -27,20 +27,26 @@ class Admin extends BaseController
     {
         $request = service('request');
         $userModel = new UserModel();
+        $organizationModel = new OrganizationModel();
+        $departmentModel = new DepartmentModel();
 
         $draw = $request->getVar('draw');
         $start = $request->getVar('start');
         $length = $request->getVar('length');
         $search = $request->getVar('search')['value'];
 
-        $userModel->select('userID, name, email, role')->where('status', 'active');
+        // $userModel->select('userID, name, email, orgID, deptID, role')->where('status', 'active');
+        $userModel->select('user.userID, user.name, user.email, user.orgID, user.deptID, user.role, organization.name as organization_name')
+              ->join('organization', 'organization.orgID = users.orgID')
+              ->where('user.status', 'active');
 
         if (!empty($search)) {
             $userModel->groupStart()
-                      ->like('name', $search)
-                      ->orLike('email', $search)
-                      ->orLike('role', $search)
-                      ->groupEnd();
+                  ->like('user.name', $search)
+                  ->orLike('user.email', $search)
+                  ->orLike('user.role', $search)
+                  ->orLike('organization.name', $search) // 🔍 search in organization name
+                  ->groupEnd();
         }
 
         $totalFiltered = $userModel->countAllResults(false);
@@ -50,11 +56,13 @@ class Admin extends BaseController
         $i = $start + 1;
         foreach ($users as $user) {
             $result[] = [
-                'no'       => $i++,
-                'username' => $user['name'],
-                'email'    => $user['email'],
-                'id'        =>$user['userID'],
-                'role'     => ucfirst($user['role']),
+                'no'            => $i++,
+                'id'            =>$user['userID'],
+                'username'      => $user['name'],
+                'email'         => $user['email'],
+                'organization'  => $user['organization_name'],
+                'deptID'        => $user['deptID'],
+                'role'          => ucfirst($user['role']),
             ];
         }
 
