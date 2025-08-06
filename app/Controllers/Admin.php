@@ -27,59 +27,67 @@ class Admin extends BaseController
     {
         $request = service('request');
         $userModel = new UserModel();
-        $organizationModel = new OrganizationModel();
-        $departmentModel = new DepartmentModel();
 
-        $draw = $request->getVar('draw');
-        $start = $request->getVar('start');
+        $draw   = $request->getVar('draw');
+        $start  = $request->getVar('start');
         $length = $request->getVar('length');
         $search = $request->getVar('search')['value'];
 
-        // $userModel->select('userID, name, email, orgID, deptID, role')->where('status', 'active');
-        $userModel->select('user.userID, user.name, user.email, user.orgID, user.deptID, user.role, organization.name as organization_name')
-              ->join('organization', 'organization.orgID = users.orgID')
-              ->where('user.status', 'active');
+        // Join with organization and department tables to get names
+        $userModel->select('user.userID, user.name, user.email, user.orgID, user.deptID, user.role, 
+                            organization.name as organization_name, 
+                            department.name as department_name')
+                ->join('organization', 'organization.orgID = user.orgID', 'left')
+                ->join('department', 'department.deptID = user.deptID', 'left')
+                ->where('user.status', 'active');
 
+        // Apply search filters if needed
         if (!empty($search)) {
             $userModel->groupStart()
-                  ->like('user.name', $search)
-                  ->orLike('user.email', $search)
-                  ->orLike('user.role', $search)
-                  ->orLike('organization.name', $search) // 🔍 search in organization name
-                  ->groupEnd();
+                    ->like('user.name', $search)
+                    ->orLike('user.email', $search)
+                    ->orLike('user.role', $search)
+                    ->orLike('organization.name', $search)
+                    ->orLike('department.name', $search)
+                    ->groupEnd();
         }
 
+        // Count filtered and fetch paginated users
         $totalFiltered = $userModel->countAllResults(false);
         $users = $userModel->findAll($length, $start);
 
+        // Build response rows
         $result = [];
         $i = $start + 1;
         foreach ($users as $user) {
             $result[] = [
                 'no'            => $i++,
-                'id'            =>$user['userID'],
+                'id'            => $user['userID'],
                 'username'      => $user['name'],
                 'email'         => $user['email'],
-                'organization'  => $user['organization_name'],
-                'deptID'        => $user['deptID'],
+                'organization'  => $user['organization_name'] ?? '-',
+                'department'    => $user['department_name'] ?? '-',
                 'role'          => ucfirst($user['role']),
             ];
         }
 
+        // Count total active users for DataTables
         $totalActive = (new UserModel())
-                    ->where('status', 'active')
-                    ->countAllResults();
+                        ->where('status', 'active')
+                        ->countAllResults();
 
         $output = [
             'draw'            => intval($draw),
-            // 'recordsTotal'    => $userModel->countAll(),
             'recordsTotal'    => $totalActive,
             'recordsFiltered' => $totalFiltered,
             'data'            => $result,
         ];
 
+        
+
         return $this->response->setJSON($output);
     }
+
 
     public function createUser()
     {
