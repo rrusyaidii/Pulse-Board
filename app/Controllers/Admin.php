@@ -301,7 +301,7 @@ class Admin extends BaseController
         $length = $request->getVar('length');
         $search = $request->getVar('search')['value'];
 
-        $orgModel->select('orgID, name, status')->where('status', 'active');
+        $orgModel->select('orgID, name, address, status')->where('status', 'active');
 
         if (!empty($search)) {
             $orgModel->groupStart()
@@ -320,6 +320,7 @@ class Admin extends BaseController
                 'no'            => $i++,
                 'id'            => $org['orgID'],
                 'organization'  => $org['name'],
+                'address'       => $org['address'],
                 'status'        => $org['status'],
             ];
         }
