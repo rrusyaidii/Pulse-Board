@@ -116,7 +116,7 @@
                                         <a class="btn btn-primary"
                                             href="<?= base_url('project/project/edit/' . $project['projectID']) ?>">Edit</a>
                                     <?php else: ?>
-                                        <a class="btn btn-secondary"
+                                        <a class="btn btn-primary"
                                             href="<?= base_url('project/project/view/' . $project['projectID']) ?>">View</a>
                                     <?php endif; ?>
 
