@@ -61,15 +61,17 @@ git clone https://github.com/yourusername/pulse-board.git
 cd pulse-board
 ``` 
 
-## Configure environment
-### Copy .env.example to .env (or update app/Config/Database.php):
+### **2. Install dependencies**
+** Run following command**
 ```bash 
 composer install
 ```
-### Update the following in .env:
+### **3. Configure environment**
+** Copy .env.example to .env (or update app/Config/Database.php):**
 ```bash 
 cp env .env
 ```
+** Update the following in .env:**
 
 ```bash 
 CI_ENVIRONMENT = development
@@ -80,3 +82,26 @@ database.default.username = root
 database.default.password = 
 database.default.DBDriver = MySQLi
 ```
+
+### **4. Import the database into the DB**
+```bash
+pulseboard.sql
+```
+### **5. Start the development server**
+```bash
+php spark serve
+```
+---
+## 👥 Team & Acknowledgements
+- Developed during Hackathon 2025
+- Inspired by issues faced in real development workflows
+- Mentor: Cik Mimi
+- Team Members:
+-- Faiz Aiman
+-- Haziq Rusyaidi
+-- Nur Syazlin
+-- Nur Afiqah
+-- Husna Umairah
+
+
+
